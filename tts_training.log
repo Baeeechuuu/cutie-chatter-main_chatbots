@@ -1,0 +1,683 @@
+2025-06-06 22:46:53,820 - __main__ - INFO - 🎮 === GENSHIN VOICE TTS TRAINING LAUNCHER === 🎵
+2025-06-06 22:46:53,821 - __main__ - INFO - Current directory: C:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots
+2025-06-06 22:46:53,821 - __main__ - INFO - Python version: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+2025-06-06 22:46:53,821 - __main__ - INFO - === Checking Dependencies ===
+2025-06-06 22:46:56,193 - __main__ - INFO - ✅ torch
+2025-06-06 22:46:56,357 - __main__ - INFO - ✅ torchaudio
+2025-06-06 22:46:58,077 - __main__ - INFO - ✅ transformers
+2025-06-06 22:46:58,821 - datasets - INFO - PyTorch version 2.7.1 available.
+2025-06-06 22:46:59,217 - __main__ - INFO - ✅ datasets
+2025-06-06 22:46:59,218 - __main__ - INFO - ✅ huggingface_hub
+2025-06-06 22:46:59,223 - __main__ - INFO - ✅ librosa
+2025-06-06 22:46:59,223 - __main__ - INFO - ✅ numpy
+2025-06-06 22:46:59,407 - __main__ - INFO - ✅ matplotlib
+2025-06-06 22:46:59,408 - __main__ - INFO - ✅ soundfile
+2025-06-06 22:46:59,408 - __main__ - INFO - All dependencies satisfied!
+2025-06-06 22:46:59,408 - __main__ - INFO - === Checking GPU Availability ===
+2025-06-06 22:46:59,408 - __main__ - WARNING - ⚠️  CUDA not available - training will use CPU
+2025-06-06 22:46:59,408 - __main__ - WARNING -    This will be significantly slower!
+2025-06-06 22:47:04,670 - __main__ - INFO - === Checking HuggingFace Authentication ===
+2025-06-06 22:47:05,046 - __main__ - INFO - ✅ Logged in to HuggingFace as: baechuuu
+2025-06-06 22:47:05,047 - __main__ - INFO - === Checking Dataset Availability ===
+2025-06-06 22:47:05,047 - __main__ - INFO - Testing dataset access...
+2025-06-06 22:48:44,701 - __main__ - INFO - ✅ Dataset accessible!
+2025-06-06 22:48:44,701 - __main__ - INFO -    Sample keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 22:48:44,701 - __main__ - INFO - === Setting Up Training Environment ===
+2025-06-06 22:48:44,702 - __main__ - INFO - ✅ Directory ready: model_checkpoints/
+2025-06-06 22:48:44,702 - __main__ - INFO - ✅ Directory ready: training_logs/
+2025-06-06 22:48:44,702 - __main__ - INFO - ✅ Directory ready: analysis/
+2025-06-06 22:48:44,703 - __main__ - INFO - ✅ Directory ready: temp_audio/
+2025-06-06 22:48:44,703 - __main__ - INFO - ✅ Disk space: 10.0 GB available
+2025-06-06 22:48:44,703 - __main__ - INFO - 🚀 Ready to start training!
+2025-06-06 22:48:44,703 - __main__ - INFO - This process may take several hours...
+2025-06-06 22:48:44,703 - __main__ - WARNING - ⚠️  Training on CPU will be very slow!
+2025-06-06 22:48:54,312 - __main__ - INFO - === Starting TTS Training ===
+2025-06-06 22:48:54,312 - __main__ - INFO - Importing training module...
+2025-06-06 22:48:55,505 - __main__ - INFO - Training started at: Fri Jun  6 22:48:55 2025
+2025-06-06 22:48:55,505 - __main__ - INFO - 🚀 Launching training process...
+2025-06-06 22:48:55,505 - tts_trainer - INFO - Using device: cpu
+2025-06-06 22:48:55,505 - tts_trainer - INFO - Loading Genshin voice dataset split: train
+2025-06-06 22:49:02,268 - tts_trainer - INFO - Successfully loaded dataset with 200 samples
+2025-06-06 22:49:03,740 - tts_trainer - INFO - Dataset loaded with 0 valid samples
+2025-06-06 22:49:03,740 - tts_trainer - WARNING - No valid samples found! Creating dummy data for testing...
+2025-06-06 22:49:03,741 - tts_trainer - INFO - Total dataset size: 50
+2025-06-06 22:49:03,741 - tts_trainer - INFO - Train size: 40, Val size: 10
+2025-06-06 22:49:03,741 - tts_trainer - INFO - Data loaders created successfully
+2025-06-06 22:49:03,741 - tts_trainer - INFO - Testing data loading...
+2025-06-06 22:49:03,904 - tts_trainer - INFO - Sample batch shapes:
+2025-06-06 22:49:03,904 - tts_trainer - INFO -   Audio: torch.Size([4, 110250])
+2025-06-06 22:49:03,904 - tts_trainer - INFO -   Mel: torch.Size([4, 80, 200])
+2025-06-06 22:49:03,904 - tts_trainer - INFO -   Text tokens: torch.Size([4, 128])
+2025-06-06 22:49:03,904 - tts_trainer - INFO -   Speakers: 4
+2025-06-06 22:49:03,980 - tts_trainer - INFO - Model dimensions:
+2025-06-06 22:49:03,981 - tts_trainer - INFO -   Text encoder output: 256
+2025-06-06 22:49:03,981 - tts_trainer - INFO -   Prenet output: 128
+2025-06-06 22:49:03,981 - tts_trainer - INFO -   Decoder input: 384
+2025-06-06 22:49:03,981 - tts_trainer - INFO -   Decoder hidden: 256
+2025-06-06 22:49:03,981 - tts_trainer - INFO - Model created with vocab_size: 50257
+2025-06-06 22:49:05,740 - tts_trainer - INFO - Starting training...
+2025-06-06 22:49:05,741 - tts_trainer - INFO - Epoch 1/15
+2025-06-06 22:49:09,071 - tts_trainer - INFO - Batch 5, Loss: 16.3178
+2025-06-06 22:49:11,783 - tts_trainer - INFO - Batch 10, Loss: 18.5957
+2025-06-06 22:49:11,788 - tts_trainer - INFO - Train Loss: 19.3924
+2025-06-06 22:49:12,148 - tts_trainer - INFO - Val Loss: 17.9277
+2025-06-06 22:49:12,465 - tts_trainer - INFO - New best model saved with val loss: 17.9277
+2025-06-06 22:49:12,465 - tts_trainer - INFO - Epoch 2/15
+2025-06-06 22:49:15,293 - tts_trainer - INFO - Batch 5, Loss: 8.9462
+2025-06-06 22:49:17,972 - tts_trainer - INFO - Batch 10, Loss: 16.2919
+2025-06-06 22:49:17,978 - tts_trainer - INFO - Train Loss: 14.3576
+2025-06-06 22:49:18,347 - tts_trainer - INFO - Val Loss: 13.6816
+2025-06-06 22:49:18,722 - tts_trainer - INFO - New best model saved with val loss: 13.6816
+2025-06-06 22:49:18,723 - tts_trainer - INFO - Epoch 3/15
+2025-06-06 22:49:21,392 - tts_trainer - INFO - Batch 5, Loss: 10.3995
+2025-06-06 22:49:24,030 - tts_trainer - INFO - Batch 10, Loss: 13.4092
+2025-06-06 22:49:24,035 - tts_trainer - INFO - Train Loss: 10.8757
+2025-06-06 22:49:24,389 - tts_trainer - INFO - Val Loss: 10.9592
+2025-06-06 22:49:24,689 - tts_trainer - INFO - New best model saved with val loss: 10.9592
+2025-06-06 22:49:24,690 - tts_trainer - INFO - Epoch 4/15
+2025-06-06 22:49:27,367 - tts_trainer - INFO - Batch 5, Loss: 9.4725
+2025-06-06 22:49:30,369 - tts_trainer - INFO - Batch 10, Loss: 8.7689
+2025-06-06 22:49:30,376 - tts_trainer - INFO - Train Loss: 8.7585
+2025-06-06 22:49:30,973 - tts_trainer - INFO - Val Loss: 9.3989
+2025-06-06 22:49:31,345 - tts_trainer - INFO - New best model saved with val loss: 9.3989
+2025-06-06 22:49:31,346 - tts_trainer - INFO - Epoch 5/15
+2025-06-06 22:49:35,334 - tts_trainer - INFO - Batch 5, Loss: 7.7085
+2025-06-06 22:49:39,295 - tts_trainer - INFO - Batch 10, Loss: 7.4131
+2025-06-06 22:49:39,301 - tts_trainer - INFO - Train Loss: 7.3466
+2025-06-06 22:49:39,737 - tts_trainer - INFO - Val Loss: 8.3699
+2025-06-06 22:49:40,011 - tts_trainer - INFO - New best model saved with val loss: 8.3699
+2025-06-06 22:49:40,882 - tts_trainer - INFO - Epoch 6/15
+2025-06-06 22:49:45,698 - tts_trainer - INFO - Batch 5, Loss: 6.3305
+2025-06-06 22:49:50,652 - tts_trainer - INFO - Batch 10, Loss: 6.6502
+2025-06-06 22:49:50,657 - tts_trainer - INFO - Train Loss: 6.5622
+2025-06-06 22:49:51,290 - tts_trainer - INFO - Val Loss: 8.0288
+2025-06-06 22:49:51,543 - tts_trainer - INFO - New best model saved with val loss: 8.0288
+2025-06-06 22:49:51,543 - tts_trainer - INFO - Epoch 7/15
+2025-06-06 22:49:56,682 - tts_trainer - INFO - Batch 5, Loss: 6.1971
+2025-06-06 22:50:01,330 - tts_trainer - INFO - Batch 10, Loss: 6.1168
+2025-06-06 22:50:01,336 - tts_trainer - INFO - Train Loss: 6.1439
+2025-06-06 22:50:01,885 - tts_trainer - INFO - Val Loss: 7.6703
+2025-06-06 22:50:02,105 - tts_trainer - INFO - New best model saved with val loss: 7.6703
+2025-06-06 22:50:02,105 - tts_trainer - INFO - Epoch 8/15
+2025-06-06 22:50:06,676 - tts_trainer - INFO - Batch 5, Loss: 5.6596
+2025-06-06 22:50:11,116 - tts_trainer - INFO - Batch 10, Loss: 6.1501
+2025-06-06 22:50:11,124 - tts_trainer - INFO - Train Loss: 5.8045
+2025-06-06 22:50:11,777 - tts_trainer - INFO - Val Loss: 7.4282
+2025-06-06 22:50:12,003 - tts_trainer - INFO - New best model saved with val loss: 7.4282
+2025-06-06 22:50:12,003 - tts_trainer - INFO - Epoch 9/15
+2025-06-06 22:50:16,351 - tts_trainer - INFO - Batch 5, Loss: 5.5488
+2025-06-06 22:50:20,826 - tts_trainer - INFO - Batch 10, Loss: 5.7460
+2025-06-06 22:50:20,831 - tts_trainer - INFO - Train Loss: 5.6457
+2025-06-06 22:50:21,323 - tts_trainer - INFO - Val Loss: 7.5071
+2025-06-06 22:50:21,323 - tts_trainer - INFO - Epoch 10/15
+2025-06-06 22:50:25,706 - tts_trainer - INFO - Batch 5, Loss: 5.8842
+2025-06-06 22:50:29,456 - tts_trainer - INFO - Batch 10, Loss: 5.4334
+2025-06-06 22:50:29,462 - tts_trainer - INFO - Train Loss: 5.5198
+2025-06-06 22:50:29,873 - tts_trainer - INFO - Val Loss: 7.1941
+2025-06-06 22:50:30,101 - tts_trainer - INFO - New best model saved with val loss: 7.1941
+2025-06-06 22:50:30,351 - tts_trainer - INFO - Epoch 11/15
+2025-06-06 22:50:33,463 - tts_trainer - INFO - Batch 5, Loss: 5.6171
+2025-06-06 22:50:36,247 - tts_trainer - INFO - Batch 10, Loss: 5.3126
+2025-06-06 22:50:36,252 - tts_trainer - INFO - Train Loss: 5.4020
+2025-06-06 22:50:36,590 - tts_trainer - INFO - Val Loss: 7.1181
+2025-06-06 22:50:36,785 - tts_trainer - INFO - New best model saved with val loss: 7.1181
+2025-06-06 22:50:36,785 - tts_trainer - INFO - Epoch 12/15
+2025-06-06 22:50:39,518 - tts_trainer - INFO - Batch 5, Loss: 4.4985
+2025-06-06 22:50:42,336 - tts_trainer - INFO - Batch 10, Loss: 5.3411
+2025-06-06 22:50:42,341 - tts_trainer - INFO - Train Loss: 5.2742
+2025-06-06 22:50:42,702 - tts_trainer - INFO - Val Loss: 7.1934
+2025-06-06 22:50:42,702 - tts_trainer - INFO - Epoch 13/15
+2025-06-06 22:50:45,548 - tts_trainer - INFO - Batch 5, Loss: 4.1816
+2025-06-06 22:50:48,286 - tts_trainer - INFO - Batch 10, Loss: 5.0172
+2025-06-06 22:50:48,291 - tts_trainer - INFO - Train Loss: 5.1859
+2025-06-06 22:50:48,621 - tts_trainer - INFO - Val Loss: 7.0317
+2025-06-06 22:50:48,824 - tts_trainer - INFO - New best model saved with val loss: 7.0317
+2025-06-06 22:50:48,825 - tts_trainer - INFO - Epoch 14/15
+2025-06-06 22:50:51,583 - tts_trainer - INFO - Batch 5, Loss: 4.7893
+2025-06-06 22:50:54,237 - tts_trainer - INFO - Batch 10, Loss: 5.8737
+2025-06-06 22:50:54,242 - tts_trainer - INFO - Train Loss: 5.1081
+2025-06-06 22:50:54,578 - tts_trainer - INFO - Val Loss: 7.0833
+2025-06-06 22:50:54,578 - tts_trainer - INFO - Epoch 15/15
+2025-06-06 22:50:57,302 - tts_trainer - INFO - Batch 5, Loss: 5.2237
+2025-06-06 22:51:00,054 - tts_trainer - INFO - Batch 10, Loss: 4.4716
+2025-06-06 22:51:00,061 - tts_trainer - INFO - Train Loss: 5.0832
+2025-06-06 22:51:00,463 - tts_trainer - INFO - Val Loss: 7.1679
+2025-06-06 22:51:00,825 - tts_trainer - INFO - Training completed!
+2025-06-06 22:51:00,825 - tts_trainer - INFO - Testing inference...
+2025-06-06 22:51:00,836 - tts_trainer - INFO - Testing inference with text: 'Children's toys are very fun things, that's for sure. I enjoy watching the children at play as much as anyone else. But there is more to it than that.'
+2025-06-06 22:51:01,001 - tts_trainer - INFO - Generated mel spectrogram shape: torch.Size([1, 1, 16000])
+2025-06-06 22:51:01,002 - tts_trainer - INFO - Stop tokens shape: torch.Size([1, 200, 1])
+2025-06-06 22:51:01,293 - tts_trainer - INFO - Mel spectrogram saved to model_checkpoints\generated_mel.png
+2025-06-06 22:51:01,548 - tts_trainer - INFO - Mel spectrogram saved to model_checkpoints\original_mel.png
+2025-06-06 22:51:01,548 - tts_trainer - INFO - Inference test completed successfully!
+2025-06-06 22:51:01,584 - __main__ - INFO - 🎉 Training completed successfully!
+2025-06-06 22:51:01,584 - __main__ - INFO - Total training time: 0.04 hours
+2025-06-06 22:51:01,584 - __main__ - INFO - === Post-Training Summary ===
+2025-06-06 22:51:01,585 - __main__ - INFO - Generated checkpoints: 11
+2025-06-06 22:51:01,585 - __main__ - INFO -   - best_model.pt: 163.2 MB
+2025-06-06 22:51:01,585 - __main__ - INFO -   - checkpoint_epoch_10.pt: 163.2 MB
+2025-06-06 22:51:01,586 - __main__ - INFO -   - checkpoint_epoch_15.pt: 163.2 MB
+2025-06-06 22:51:01,586 - __main__ - INFO -   - checkpoint_epoch_20.pt: 54.2 MB
+2025-06-06 22:51:01,586 - __main__ - INFO -   - checkpoint_epoch_25.pt: 60.6 MB
+2025-06-06 22:51:01,586 - __main__ - INFO -   - checkpoint_epoch_30.pt: 60.6 MB
+2025-06-06 22:51:01,586 - __main__ - INFO -   - checkpoint_epoch_35.pt: 60.6 MB
+2025-06-06 22:51:01,586 - __main__ - INFO -   - checkpoint_epoch_40.pt: 60.6 MB
+2025-06-06 22:51:01,586 - __main__ - INFO -   - checkpoint_epoch_45.pt: 60.6 MB
+2025-06-06 22:51:01,586 - __main__ - INFO -   - checkpoint_epoch_5.pt: 163.2 MB
+2025-06-06 22:51:01,586 - __main__ - INFO -   - checkpoint_epoch_50.pt: 60.6 MB
+2025-06-06 22:51:01,587 - __main__ - INFO - Log files: 1
+2025-06-06 22:51:01,587 - __main__ - INFO -   - tts_training.log
+2025-06-06 22:51:01,587 - __main__ - INFO - Analysis files: 0
+2025-06-06 22:51:01,587 - __main__ - INFO - 🎉 Training completed successfully!
+2025-06-06 22:51:01,588 - __main__ - INFO - Check model_checkpoints/ for trained models
+2025-06-06 22:51:01,588 - __main__ - INFO - Check analysis/ for training plots and statistics
+2025-06-06 23:06:19,913 - __main__ - INFO - 🎮 === GENSHIN VOICE TTS TRAINING LAUNCHER === 🎵
+2025-06-06 23:06:19,914 - __main__ - INFO - Current directory: C:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots
+2025-06-06 23:06:19,914 - __main__ - INFO - Python version: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+2025-06-06 23:06:19,914 - __main__ - INFO - === Checking Dependencies ===
+2025-06-06 23:06:21,717 - __main__ - INFO - ✅ torch
+2025-06-06 23:06:21,812 - __main__ - INFO - ✅ torchaudio
+2025-06-06 23:06:22,837 - __main__ - INFO - ✅ transformers
+2025-06-06 23:06:23,245 - datasets - INFO - PyTorch version 2.7.1 available.
+2025-06-06 23:06:23,467 - __main__ - INFO - ✅ datasets
+2025-06-06 23:06:23,467 - __main__ - INFO - ✅ huggingface_hub
+2025-06-06 23:06:23,470 - __main__ - INFO - ✅ librosa
+2025-06-06 23:06:23,470 - __main__ - INFO - ✅ numpy
+2025-06-06 23:06:23,611 - __main__ - INFO - ✅ matplotlib
+2025-06-06 23:06:23,611 - __main__ - INFO - ✅ soundfile
+2025-06-06 23:06:23,611 - __main__ - INFO - All dependencies satisfied!
+2025-06-06 23:06:23,612 - __main__ - INFO - === Checking GPU Availability ===
+2025-06-06 23:06:23,612 - __main__ - WARNING - ⚠️  CUDA not available - training will use CPU
+2025-06-06 23:06:23,612 - __main__ - WARNING -    This will be significantly slower!
+2025-06-06 23:06:27,070 - __main__ - INFO - === Checking HuggingFace Authentication ===
+2025-06-06 23:06:28,681 - __main__ - INFO - ✅ Logged in to HuggingFace as: baechuuu
+2025-06-06 23:06:28,682 - __main__ - INFO - === Checking Dataset Availability ===
+2025-06-06 23:06:28,682 - __main__ - INFO - Testing dataset access...
+2025-06-06 23:07:42,837 - __main__ - INFO - ✅ Dataset accessible!
+2025-06-06 23:07:42,837 - __main__ - INFO -    Sample keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:07:42,838 - __main__ - INFO - === Setting Up Training Environment ===
+2025-06-06 23:07:42,838 - __main__ - INFO - ✅ Directory ready: model_checkpoints/
+2025-06-06 23:07:42,838 - __main__ - INFO - ✅ Directory ready: training_logs/
+2025-06-06 23:07:42,838 - __main__ - INFO - ✅ Directory ready: analysis/
+2025-06-06 23:07:42,839 - __main__ - INFO - ✅ Directory ready: temp_audio/
+2025-06-06 23:07:42,839 - __main__ - INFO - ✅ Disk space: 8.5 GB available
+2025-06-06 23:07:42,839 - __main__ - INFO - 🚀 Ready to start training!
+2025-06-06 23:07:42,839 - __main__ - INFO - This process may take several hours...
+2025-06-06 23:07:42,839 - __main__ - WARNING - ⚠️  Training on CPU will be very slow!
+2025-06-06 23:07:46,284 - __main__ - INFO - === Starting TTS Training ===
+2025-06-06 23:07:46,284 - __main__ - INFO - Importing training module...
+2025-06-06 23:07:47,273 - __main__ - INFO - Training started at: Fri Jun  6 23:07:47 2025
+2025-06-06 23:07:47,273 - __main__ - INFO - 🚀 Launching training process...
+2025-06-06 23:07:47,273 - tts_trainer - INFO - Using device: cpu
+2025-06-06 23:07:47,273 - tts_trainer - INFO - Loading Genshin voice dataset split: train
+2025-06-06 23:07:53,754 - tts_trainer - INFO - Dataset loaded with 0 valid samples
+2025-06-06 23:07:53,755 - __main__ - ERROR - ❌ Training failed with error!
+2025-06-06 23:07:53,755 - __main__ - ERROR - Error: num_samples should be a positive integer value, but got num_samples=0
+2025-06-06 23:07:53,756 - __main__ - ERROR - Full traceback:
+2025-06-06 23:07:53,757 - __main__ - ERROR - Traceback (most recent call last):
+  File "c:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots\model-train\train_tts.py", line 183, in run_training
+    train_main()
+  File "c:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots\model-train\tts_trainer.py", line 472, in main
+    train_dataloader = DataLoader(
+                       ^^^^^^^^^^^
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\site-packages\torch\utils\data\dataloader.py", line 385, in __init__
+    sampler = RandomSampler(dataset, generator=generator)  # type: ignore[arg-type]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\site-packages\torch\utils\data\sampler.py", line 156, in __init__
+    raise ValueError(
+ValueError: num_samples should be a positive integer value, but got num_samples=0
+
+2025-06-06 23:07:53,790 - __main__ - INFO - === Post-Training Summary ===
+2025-06-06 23:07:53,791 - __main__ - INFO - Generated checkpoints: 11
+2025-06-06 23:07:53,793 - __main__ - INFO -   - best_model.pt: 163.2 MB
+2025-06-06 23:07:53,799 - __main__ - INFO -   - checkpoint_epoch_10.pt: 163.2 MB
+2025-06-06 23:07:53,799 - __main__ - INFO -   - checkpoint_epoch_15.pt: 163.2 MB
+2025-06-06 23:07:53,800 - __main__ - INFO -   - checkpoint_epoch_20.pt: 54.2 MB
+2025-06-06 23:07:53,800 - __main__ - INFO -   - checkpoint_epoch_25.pt: 60.6 MB
+2025-06-06 23:07:53,800 - __main__ - INFO -   - checkpoint_epoch_30.pt: 60.6 MB
+2025-06-06 23:07:53,800 - __main__ - INFO -   - checkpoint_epoch_35.pt: 60.6 MB
+2025-06-06 23:07:53,802 - __main__ - INFO -   - checkpoint_epoch_40.pt: 60.6 MB
+2025-06-06 23:07:53,802 - __main__ - INFO -   - checkpoint_epoch_45.pt: 60.6 MB
+2025-06-06 23:07:53,802 - __main__ - INFO -   - checkpoint_epoch_5.pt: 163.2 MB
+2025-06-06 23:07:53,803 - __main__ - INFO -   - checkpoint_epoch_50.pt: 60.6 MB
+2025-06-06 23:07:53,803 - __main__ - INFO - Log files: 1
+2025-06-06 23:07:53,803 - __main__ - INFO -   - tts_training.log
+2025-06-06 23:07:53,803 - __main__ - INFO - Analysis files: 0
+2025-06-06 23:07:53,803 - __main__ - ERROR - ❌ Training failed!
+2025-06-06 23:07:53,803 - __main__ - INFO - Check logs for error details
+2025-06-06 23:12:22,045 - __main__ - INFO - 🎮 === GENSHIN VOICE TTS TRAINING LAUNCHER === 🎵
+2025-06-06 23:12:22,045 - __main__ - INFO - Current directory: C:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots
+2025-06-06 23:12:22,045 - __main__ - INFO - Python version: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+2025-06-06 23:12:22,045 - __main__ - INFO - === Checking Dependencies ===
+2025-06-06 23:12:23,888 - __main__ - INFO - ✅ torch
+2025-06-06 23:12:23,976 - __main__ - INFO - ✅ torchaudio
+2025-06-06 23:12:24,973 - __main__ - INFO - ✅ transformers
+2025-06-06 23:12:25,365 - datasets - INFO - PyTorch version 2.7.1 available.
+2025-06-06 23:12:25,590 - __main__ - INFO - ✅ datasets
+2025-06-06 23:12:25,591 - __main__ - INFO - ✅ huggingface_hub
+2025-06-06 23:12:25,594 - __main__ - INFO - ✅ librosa
+2025-06-06 23:12:25,594 - __main__ - INFO - ✅ numpy
+2025-06-06 23:12:25,737 - __main__ - INFO - ✅ matplotlib
+2025-06-06 23:12:25,737 - __main__ - INFO - ✅ soundfile
+2025-06-06 23:12:25,737 - __main__ - INFO - All dependencies satisfied!
+2025-06-06 23:12:25,737 - __main__ - INFO - === Checking GPU Availability ===
+2025-06-06 23:12:25,737 - __main__ - WARNING - ⚠️  CUDA not available - training will use CPU
+2025-06-06 23:12:25,737 - __main__ - WARNING -    This will be significantly slower!
+2025-06-06 23:12:29,422 - __main__ - INFO - === Checking HuggingFace Authentication ===
+2025-06-06 23:12:29,737 - __main__ - INFO - ✅ Logged in to HuggingFace as: baechuuu
+2025-06-06 23:12:29,737 - __main__ - INFO - === Checking Dataset Availability ===
+2025-06-06 23:12:29,737 - __main__ - INFO - Testing dataset access...
+2025-06-06 23:13:22,446 - __main__ - INFO - ✅ Dataset accessible!
+2025-06-06 23:13:22,447 - __main__ - INFO -    Sample keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:13:22,447 - __main__ - INFO - === Debugging Dataset Structure ===
+2025-06-06 23:13:22,447 - __main__ - INFO - Loading dataset for debugging...
+2025-06-06 23:14:11,818 - __main__ - INFO - Analyzed 5 samples:
+2025-06-06 23:14:11,819 - __main__ - INFO - 
+Sample 1:
+2025-06-06 23:14:11,819 - __main__ - INFO -   Keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:14:11,819 - __main__ - INFO -   audio: dict with keys ['path', 'array', 'sampling_rate']
+2025-06-06 23:14:11,819 - __main__ - ERROR - Dataset debugging failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-06-06 23:14:11,820 - __main__ - INFO - === Setting Up Training Environment ===
+2025-06-06 23:14:11,820 - __main__ - INFO - ✅ Directory ready: model_checkpoints/
+2025-06-06 23:14:11,820 - __main__ - INFO - ✅ Directory ready: training_logs/
+2025-06-06 23:14:11,821 - __main__ - INFO - ✅ Directory ready: analysis/
+2025-06-06 23:14:11,821 - __main__ - INFO - ✅ Directory ready: temp_audio/
+2025-06-06 23:14:11,822 - __main__ - INFO - ✅ Disk space: 9.2 GB available
+2025-06-06 23:14:11,822 - __main__ - INFO - 🚀 Ready to start training!
+2025-06-06 23:14:11,822 - __main__ - INFO - This process may take several hours...
+2025-06-06 23:14:11,822 - __main__ - WARNING - ⚠️  Training on CPU will be very slow!
+2025-06-06 23:14:29,238 - __main__ - INFO - === Starting TTS Training ===
+2025-06-06 23:14:29,238 - __main__ - INFO - Importing training module...
+2025-06-06 23:14:30,333 - __main__ - INFO - Training started at: Fri Jun  6 23:14:30 2025
+2025-06-06 23:14:30,333 - __main__ - INFO - 🚀 Launching training process...
+2025-06-06 23:14:30,333 - tts_trainer - INFO - Using device: cpu
+2025-06-06 23:14:30,333 - tts_trainer - INFO - Loading Genshin voice dataset split: train
+2025-06-06 23:14:34,889 - datasets.load - WARNING - Using the latest cached version of the dataset since nc33/genshin_voice_v13 couldn't be found on the Hugging Face Hub
+2025-06-06 23:14:34,890 - datasets.packaged_modules.cache.cache - WARNING - Found the latest cached dataset configuration 'default' at C:\Users\Aldrich\.cache\huggingface\datasets\nc33___genshin_voice_v13\default\0.0.0\d7145c9617c48c2d72229cef215630ec27d58fae (last modified on Thu Jun  5 23:37:55 2025).
+2025-06-06 23:14:36,795 - tts_trainer - INFO - Dataset loaded with 0 valid samples
+2025-06-06 23:14:36,796 - __main__ - ERROR - ❌ Training failed with error!
+2025-06-06 23:14:36,796 - __main__ - ERROR - Error: num_samples should be a positive integer value, but got num_samples=0
+2025-06-06 23:14:36,796 - __main__ - ERROR - Full traceback:
+2025-06-06 23:14:36,798 - __main__ - ERROR - Traceback (most recent call last):
+  File "c:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots\model-train\train_tts.py", line 268, in run_training
+    train_main()
+  File "c:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots\model-train\tts_trainer.py", line 472, in main
+    train_dataloader = DataLoader(
+                       ^^^^^^^^^^^
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\site-packages\torch\utils\data\dataloader.py", line 385, in __init__
+    sampler = RandomSampler(dataset, generator=generator)  # type: ignore[arg-type]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\site-packages\torch\utils\data\sampler.py", line 156, in __init__
+    raise ValueError(
+ValueError: num_samples should be a positive integer value, but got num_samples=0
+
+2025-06-06 23:14:36,834 - __main__ - INFO - === Post-Training Summary ===
+2025-06-06 23:14:36,834 - __main__ - INFO - Generated checkpoints: 11
+2025-06-06 23:14:36,835 - __main__ - INFO -   - best_model.pt: 163.2 MB
+2025-06-06 23:14:36,835 - __main__ - INFO -   - checkpoint_epoch_10.pt: 163.2 MB
+2025-06-06 23:14:36,835 - __main__ - INFO -   - checkpoint_epoch_15.pt: 163.2 MB
+2025-06-06 23:14:36,835 - __main__ - INFO -   - checkpoint_epoch_20.pt: 54.2 MB
+2025-06-06 23:14:36,835 - __main__ - INFO -   - checkpoint_epoch_25.pt: 60.6 MB
+2025-06-06 23:14:36,836 - __main__ - INFO -   - checkpoint_epoch_30.pt: 60.6 MB
+2025-06-06 23:14:36,836 - __main__ - INFO -   - checkpoint_epoch_35.pt: 60.6 MB
+2025-06-06 23:14:36,836 - __main__ - INFO -   - checkpoint_epoch_40.pt: 60.6 MB
+2025-06-06 23:14:36,836 - __main__ - INFO -   - checkpoint_epoch_45.pt: 60.6 MB
+2025-06-06 23:14:36,836 - __main__ - INFO -   - checkpoint_epoch_5.pt: 163.2 MB
+2025-06-06 23:14:36,837 - __main__ - INFO -   - checkpoint_epoch_50.pt: 60.6 MB
+2025-06-06 23:14:36,837 - __main__ - INFO - Log files: 1
+2025-06-06 23:14:36,837 - __main__ - INFO -   - tts_training.log
+2025-06-06 23:14:36,837 - __main__ - INFO - Analysis files: 0
+2025-06-06 23:14:36,838 - __main__ - ERROR - ❌ Training failed!
+2025-06-06 23:14:36,838 - __main__ - INFO - Check logs for error details
+2025-06-06 23:17:21,785 - __main__ - INFO - 🎮 === GENSHIN VOICE TTS TRAINING LAUNCHER === 🎵
+2025-06-06 23:17:21,785 - __main__ - INFO - Current directory: C:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots
+2025-06-06 23:17:21,786 - __main__ - INFO - Python version: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+2025-06-06 23:17:21,786 - __main__ - INFO - === Checking Dependencies ===
+2025-06-06 23:17:23,506 - __main__ - INFO - ✅ torch
+2025-06-06 23:17:23,592 - __main__ - INFO - ✅ torchaudio
+2025-06-06 23:17:24,581 - __main__ - INFO - ✅ transformers
+2025-06-06 23:17:24,985 - datasets - INFO - PyTorch version 2.7.1 available.
+2025-06-06 23:17:25,210 - __main__ - INFO - ✅ datasets
+2025-06-06 23:17:25,210 - __main__ - INFO - ✅ huggingface_hub
+2025-06-06 23:17:25,213 - __main__ - INFO - ✅ librosa
+2025-06-06 23:17:25,214 - __main__ - INFO - ✅ numpy
+2025-06-06 23:17:25,356 - __main__ - INFO - ✅ matplotlib
+2025-06-06 23:17:25,356 - __main__ - INFO - ✅ soundfile
+2025-06-06 23:17:25,356 - __main__ - INFO - All dependencies satisfied!
+2025-06-06 23:17:25,357 - __main__ - INFO - === Checking GPU Availability ===
+2025-06-06 23:17:25,357 - __main__ - WARNING - ⚠️  CUDA not available - training will use CPU
+2025-06-06 23:17:25,357 - __main__ - WARNING -    This will be significantly slower!
+2025-06-06 23:17:31,029 - __main__ - INFO - === Checking HuggingFace Authentication ===
+2025-06-06 23:17:31,344 - __main__ - INFO - ✅ Logged in to HuggingFace as: baechuuu
+2025-06-06 23:17:31,344 - __main__ - INFO - === Checking Dataset Availability ===
+2025-06-06 23:17:31,344 - __main__ - INFO - Testing dataset access...
+2025-06-06 23:18:18,917 - __main__ - INFO - ✅ Dataset accessible!
+2025-06-06 23:18:18,917 - __main__ - INFO -    Sample keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:18:18,917 - __main__ - INFO - === Debugging Dataset Structure ===
+2025-06-06 23:18:18,917 - __main__ - INFO - Loading dataset for debugging...
+2025-06-06 23:19:02,351 - __main__ - INFO - Analyzed 5 samples:
+2025-06-06 23:19:02,351 - __main__ - INFO - 
+Sample 1:
+2025-06-06 23:19:02,362 - __main__ - INFO -   Keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:19:02,363 - __main__ - INFO -   audio: dict with keys ['path', 'array', 'sampling_rate']
+2025-06-06 23:19:02,363 - __main__ - ERROR - Dataset debugging failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-06-06 23:19:02,364 - __main__ - INFO - === Setting Up Training Environment ===
+2025-06-06 23:19:02,365 - __main__ - INFO - ✅ Directory ready: model_checkpoints/
+2025-06-06 23:19:02,365 - __main__ - INFO - ✅ Directory ready: training_logs/
+2025-06-06 23:19:02,366 - __main__ - INFO - ✅ Directory ready: analysis/
+2025-06-06 23:19:02,366 - __main__ - INFO - ✅ Directory ready: temp_audio/
+2025-06-06 23:19:02,366 - __main__ - INFO - ✅ Disk space: 9.8 GB available
+2025-06-06 23:19:02,366 - __main__ - INFO - 🚀 Ready to start training!
+2025-06-06 23:19:02,366 - __main__ - INFO - This process may take several hours...
+2025-06-06 23:19:02,366 - __main__ - WARNING - ⚠️  Training on CPU will be very slow!
+2025-06-06 23:19:15,141 - __main__ - INFO - === Starting TTS Training ===
+2025-06-06 23:19:15,142 - __main__ - INFO - Applying dataset filtering patch...
+2025-06-06 23:19:15,142 - __main__ - INFO - === Creating Training Patch ===
+2025-06-06 23:19:15,143 - __main__ - INFO - ✅ Created patch file: dataset_patch.py
+2025-06-06 23:19:16,337 - __main__ - INFO - ✅ Dataset patch applied
+2025-06-06 23:19:16,337 - __main__ - INFO - Importing training module...
+2025-06-06 23:19:16,337 - __main__ - INFO - Training started at: Fri Jun  6 23:19:16 2025
+2025-06-06 23:19:16,337 - __main__ - INFO - 🚀 Launching training process...
+2025-06-06 23:19:16,337 - tts_trainer - INFO - Using device: cpu
+2025-06-06 23:19:16,337 - tts_trainer - INFO - Loading Genshin voice dataset split: train
+2025-06-06 23:19:22,366 - tts_trainer - INFO - Dataset loaded with 3 valid samples
+2025-06-06 23:19:25,070 - datasets - INFO - PyTorch version 2.7.1 available.
+2025-06-06 23:19:27,617 - __main__ - ERROR - ❌ Training failed with error!
+2025-06-06 23:19:27,617 - __main__ - ERROR - Error: Can't get local object 'main.<locals>.collate_fn'
+2025-06-06 23:19:27,617 - __main__ - ERROR - Full traceback:
+2025-06-06 23:19:27,654 - __main__ - ERROR - Traceback (most recent call last):
+  File "c:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots\model-train\train_tts.py", line 351, in run_training
+    train_main()
+  File "c:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots\model-train\tts_trainer.py", line 490, in main
+    sample_batch = next(iter(train_dataloader))
+                        ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\site-packages\torch\utils\data\dataloader.py", line 493, in __iter__
+    return self._get_iterator()
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\site-packages\torch\utils\data\dataloader.py", line 424, in _get_iterator
+    return _MultiProcessingDataLoaderIter(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\site-packages\torch\utils\data\dataloader.py", line 1171, in __init__
+    w.start()
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\multiprocessing\process.py", line 121, in start
+    self._popen = self._Popen(self)
+                  ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\multiprocessing\context.py", line 224, in _Popen
+    return _default_context.get_context().Process._Popen(process_obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\multiprocessing\context.py", line 337, in _Popen
+    return Popen(process_obj)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\multiprocessing\popen_spawn_win32.py", line 95, in __init__
+    reduction.dump(process_obj, to_child)
+  File "C:\Users\Aldrich\.pyenv\pyenv-win\versions\3.12.10\Lib\multiprocessing\reduction.py", line 60, in dump
+    ForkingPickler(file, protocol).dump(obj)
+AttributeError: Can't get local object 'main.<locals>.collate_fn'
+
+2025-06-06 23:19:27,677 - __main__ - INFO - === Post-Training Summary ===
+2025-06-06 23:19:27,678 - __main__ - INFO - Generated checkpoints: 11
+2025-06-06 23:19:27,678 - __main__ - INFO -   - best_model.pt: 163.2 MB
+2025-06-06 23:19:27,678 - __main__ - INFO -   - checkpoint_epoch_10.pt: 163.2 MB
+2025-06-06 23:19:27,678 - __main__ - INFO -   - checkpoint_epoch_15.pt: 163.2 MB
+2025-06-06 23:19:27,678 - __main__ - INFO -   - checkpoint_epoch_20.pt: 54.2 MB
+2025-06-06 23:19:27,679 - __main__ - INFO -   - checkpoint_epoch_25.pt: 60.6 MB
+2025-06-06 23:19:27,679 - __main__ - INFO -   - checkpoint_epoch_30.pt: 60.6 MB
+2025-06-06 23:19:27,679 - __main__ - INFO -   - checkpoint_epoch_35.pt: 60.6 MB
+2025-06-06 23:19:27,679 - __main__ - INFO -   - checkpoint_epoch_40.pt: 60.6 MB
+2025-06-06 23:19:27,679 - __main__ - INFO -   - checkpoint_epoch_45.pt: 60.6 MB
+2025-06-06 23:19:27,679 - __main__ - INFO -   - checkpoint_epoch_5.pt: 163.2 MB
+2025-06-06 23:19:27,681 - __main__ - INFO -   - checkpoint_epoch_50.pt: 60.6 MB
+2025-06-06 23:19:27,681 - __main__ - INFO - Log files: 1
+2025-06-06 23:19:27,681 - __main__ - INFO -   - tts_training.log
+2025-06-06 23:19:27,682 - __main__ - INFO - Analysis files: 0
+2025-06-06 23:19:27,682 - __main__ - ERROR - ❌ Training failed!
+2025-06-06 23:19:27,682 - __main__ - INFO - Check logs for error details
+2025-06-06 23:22:06,167 - __main__ - INFO - 🎮 === GENSHIN VOICE TTS TRAINING LAUNCHER === 🎵
+2025-06-06 23:22:06,168 - __main__ - INFO - Current directory: C:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots
+2025-06-06 23:22:06,168 - __main__ - INFO - Python version: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+2025-06-06 23:22:06,168 - __main__ - INFO - === Checking Dependencies ===
+2025-06-06 23:22:07,882 - __main__ - INFO - ✅ torch
+2025-06-06 23:22:07,980 - __main__ - INFO - ✅ torchaudio
+2025-06-06 23:22:09,053 - __main__ - INFO - ✅ transformers
+2025-06-06 23:22:09,474 - datasets - INFO - PyTorch version 2.7.1 available.
+2025-06-06 23:22:09,706 - __main__ - INFO - ✅ datasets
+2025-06-06 23:22:09,706 - __main__ - INFO - ✅ huggingface_hub
+2025-06-06 23:22:09,708 - __main__ - INFO - ✅ librosa
+2025-06-06 23:22:09,708 - __main__ - INFO - ✅ numpy
+2025-06-06 23:22:09,849 - __main__ - INFO - ✅ matplotlib
+2025-06-06 23:22:09,849 - __main__ - INFO - ✅ soundfile
+2025-06-06 23:22:09,849 - __main__ - INFO - All dependencies satisfied!
+2025-06-06 23:22:09,849 - __main__ - INFO - === Checking GPU Availability ===
+2025-06-06 23:22:09,849 - __main__ - WARNING - ⚠️  CUDA not available - training will use CPU
+2025-06-06 23:22:09,849 - __main__ - WARNING -    This will be significantly slower!
+2025-06-06 23:22:12,225 - __main__ - INFO - === Checking HuggingFace Authentication ===
+2025-06-06 23:22:12,891 - __main__ - INFO - ✅ Logged in to HuggingFace as: baechuuu
+2025-06-06 23:22:12,891 - __main__ - INFO - === Checking Dataset Availability ===
+2025-06-06 23:22:12,891 - __main__ - INFO - Testing dataset access...
+2025-06-06 23:23:04,914 - __main__ - INFO - ✅ Dataset accessible!
+2025-06-06 23:23:04,914 - __main__ - INFO -    Sample keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:23:04,914 - __main__ - INFO - === Debugging Dataset Structure ===
+2025-06-06 23:23:04,914 - __main__ - INFO - Loading dataset for debugging...
+2025-06-06 23:24:16,235 - __main__ - INFO - Analyzed 5 samples:
+2025-06-06 23:24:16,235 - __main__ - INFO - 
+Sample 1:
+2025-06-06 23:24:16,235 - __main__ - INFO -   Keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:24:16,235 - __main__ - INFO -   audio: dict with keys ['path', 'array', 'sampling_rate']
+2025-06-06 23:24:16,235 - __main__ - ERROR - Dataset debugging failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-06-06 23:24:16,246 - __main__ - INFO - === Setting Up Training Environment ===
+2025-06-06 23:24:16,247 - __main__ - INFO - ✅ Directory ready: model_checkpoints/
+2025-06-06 23:24:16,247 - __main__ - INFO - ✅ Directory ready: training_logs/
+2025-06-06 23:24:16,247 - __main__ - INFO - ✅ Directory ready: analysis/
+2025-06-06 23:24:16,247 - __main__ - INFO - ✅ Directory ready: temp_audio/
+2025-06-06 23:24:16,248 - __main__ - INFO - ✅ Disk space: 9.5 GB available
+2025-06-06 23:24:16,248 - __main__ - INFO - 🚀 Ready to start training!
+2025-06-06 23:24:16,248 - __main__ - INFO - This process may take several hours...
+2025-06-06 23:24:16,248 - __main__ - WARNING - ⚠️  Training on CPU will be very slow!
+2025-06-06 23:24:20,359 - __main__ - INFO - === Starting TTS Training ===
+2025-06-06 23:24:20,359 - __main__ - INFO - Applying Windows compatibility fixes...
+2025-06-06 23:24:20,359 - __main__ - INFO - ✅ Set multiprocessing method to 'spawn'
+2025-06-06 23:24:20,360 - __main__ - INFO - === Creating Windows Compatibility Patch ===
+2025-06-06 23:24:20,360 - __main__ - INFO - ✅ Created Windows patch: windows_patch.py
+2025-06-06 23:24:20,383 - __main__ - INFO - ✅ Windows patches applied
+2025-06-06 23:24:20,383 - __main__ - INFO - Applying dataset filtering patch...
+2025-06-06 23:24:20,383 - __main__ - ERROR - ❌ Training failed with error!
+2025-06-06 23:24:20,383 - __main__ - ERROR - Error: name 'create_minimal_training_patch' is not defined
+2025-06-06 23:24:20,383 - __main__ - ERROR - Full traceback:
+2025-06-06 23:24:20,385 - __main__ - ERROR - Traceback (most recent call last):
+  File "c:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots\model-train\train_tts.py", line 356, in run_training
+    if create_minimal_training_patch():
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'create_minimal_training_patch' is not defined
+
+2025-06-06 23:24:20,386 - __main__ - INFO - === Post-Training Summary ===
+2025-06-06 23:24:20,386 - __main__ - INFO - Generated checkpoints: 11
+2025-06-06 23:24:20,386 - __main__ - INFO -   - best_model.pt: 163.2 MB
+2025-06-06 23:24:20,386 - __main__ - INFO -   - checkpoint_epoch_10.pt: 163.2 MB
+2025-06-06 23:24:20,386 - __main__ - INFO -   - checkpoint_epoch_15.pt: 163.2 MB
+2025-06-06 23:24:20,386 - __main__ - INFO -   - checkpoint_epoch_20.pt: 54.2 MB
+2025-06-06 23:24:20,387 - __main__ - INFO -   - checkpoint_epoch_25.pt: 60.6 MB
+2025-06-06 23:24:20,387 - __main__ - INFO -   - checkpoint_epoch_30.pt: 60.6 MB
+2025-06-06 23:24:20,387 - __main__ - INFO -   - checkpoint_epoch_35.pt: 60.6 MB
+2025-06-06 23:24:20,387 - __main__ - INFO -   - checkpoint_epoch_40.pt: 60.6 MB
+2025-06-06 23:24:20,387 - __main__ - INFO -   - checkpoint_epoch_45.pt: 60.6 MB
+2025-06-06 23:24:20,387 - __main__ - INFO -   - checkpoint_epoch_5.pt: 163.2 MB
+2025-06-06 23:24:20,388 - __main__ - INFO -   - checkpoint_epoch_50.pt: 60.6 MB
+2025-06-06 23:24:20,388 - __main__ - INFO - Log files: 1
+2025-06-06 23:24:20,389 - __main__ - INFO -   - tts_training.log
+2025-06-06 23:24:20,389 - __main__ - INFO - Analysis files: 0
+2025-06-06 23:24:20,389 - __main__ - ERROR - ❌ Training failed!
+2025-06-06 23:24:20,389 - __main__ - INFO - Check logs for error details
+2025-06-06 23:28:49,148 - __main__ - INFO - 🎮 === GENSHIN VOICE TTS TRAINING LAUNCHER === 🎵
+2025-06-06 23:28:49,148 - __main__ - INFO - Current directory: C:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots
+2025-06-06 23:28:49,148 - __main__ - INFO - Python version: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+2025-06-06 23:28:49,148 - __main__ - INFO - === Checking Dependencies ===
+2025-06-06 23:28:50,892 - __main__ - INFO - ✅ torch
+2025-06-06 23:28:50,978 - __main__ - INFO - ✅ torchaudio
+2025-06-06 23:28:52,102 - __main__ - INFO - ✅ transformers
+2025-06-06 23:28:52,512 - datasets - INFO - PyTorch version 2.7.1 available.
+2025-06-06 23:28:52,748 - __main__ - INFO - ✅ datasets
+2025-06-06 23:28:52,749 - __main__ - INFO - ✅ huggingface_hub
+2025-06-06 23:28:52,751 - __main__ - INFO - ✅ librosa
+2025-06-06 23:28:52,751 - __main__ - INFO - ✅ numpy
+2025-06-06 23:28:52,897 - __main__ - INFO - ✅ matplotlib
+2025-06-06 23:28:52,897 - __main__ - INFO - ✅ soundfile
+2025-06-06 23:28:52,897 - __main__ - INFO - All dependencies satisfied!
+2025-06-06 23:28:52,897 - __main__ - INFO - === Checking GPU Availability ===
+2025-06-06 23:28:52,898 - __main__ - WARNING - ⚠️  CUDA not available - training will use CPU
+2025-06-06 23:28:52,898 - __main__ - WARNING -    This will be significantly slower!
+2025-06-06 23:28:56,432 - __main__ - INFO - === Checking HuggingFace Authentication ===
+2025-06-06 23:28:56,733 - __main__ - INFO - ✅ Logged in to HuggingFace as: baechuuu
+2025-06-06 23:28:56,734 - __main__ - INFO - === Checking Dataset Availability ===
+2025-06-06 23:28:56,734 - __main__ - INFO - Testing dataset access...
+2025-06-06 23:29:45,092 - __main__ - INFO - ✅ Dataset accessible!
+2025-06-06 23:29:45,093 - __main__ - INFO -    Sample keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:29:45,093 - __main__ - INFO - === Debugging Dataset Structure ===
+2025-06-06 23:29:45,093 - __main__ - INFO - Loading dataset for debugging...
+2025-06-06 23:30:34,708 - __main__ - INFO - Analyzed 5 samples:
+2025-06-06 23:30:34,709 - __main__ - INFO - 
+Sample 1:
+2025-06-06 23:30:34,709 - __main__ - INFO -   Keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:30:34,709 - __main__ - INFO -   audio: dict with keys ['path', 'array', 'sampling_rate']
+2025-06-06 23:30:34,709 - __main__ - ERROR - Dataset debugging failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-06-06 23:30:34,710 - __main__ - INFO - === Setting Up Training Environment ===
+2025-06-06 23:30:34,710 - __main__ - INFO - ✅ Directory ready: model_checkpoints/
+2025-06-06 23:30:34,710 - __main__ - INFO - ✅ Directory ready: training_logs/
+2025-06-06 23:30:34,710 - __main__ - INFO - ✅ Directory ready: analysis/
+2025-06-06 23:30:34,710 - __main__ - INFO - ✅ Directory ready: temp_audio/
+2025-06-06 23:30:34,710 - __main__ - INFO - ✅ Disk space: 8.1 GB available
+2025-06-06 23:30:34,710 - __main__ - INFO - 🚀 Ready to start training!
+2025-06-06 23:30:34,710 - __main__ - INFO - This process may take several hours...
+2025-06-06 23:30:34,712 - __main__ - WARNING - ⚠️  Training on CPU will be very slow!
+2025-06-06 23:30:37,552 - __main__ - INFO - === Starting TTS Training ===
+2025-06-06 23:30:37,553 - __main__ - INFO - Applying Windows compatibility fixes...
+2025-06-06 23:30:37,553 - __main__ - INFO - ✅ Set multiprocessing method to 'spawn'
+2025-06-06 23:30:37,553 - __main__ - INFO - === Creating Windows Compatibility Patch ===
+2025-06-06 23:30:37,554 - __main__ - INFO - ✅ Created Windows patch: windows_patch.py
+2025-06-06 23:30:37,557 - __main__ - INFO - ✅ Windows patches applied
+2025-06-06 23:30:37,557 - __main__ - INFO - Applying dataset filtering patch...
+2025-06-06 23:30:37,557 - __main__ - INFO - === Creating Dataset Training Patch ===
+2025-06-06 23:30:37,559 - __main__ - INFO - ✅ Created dataset patch file: dataset_patch.py
+2025-06-06 23:30:38,563 - __main__ - INFO - ✅ Dataset patch applied
+2025-06-06 23:30:38,563 - __main__ - INFO - Importing training module...
+2025-06-06 23:30:38,563 - __main__ - INFO - Training started at: Fri Jun  6 23:30:38 2025
+2025-06-06 23:30:38,563 - __main__ - INFO - 🚀 Launching training process...
+2025-06-06 23:30:38,564 - tts_trainer - INFO - Using device: cpu
+2025-06-06 23:30:38,564 - tts_trainer - INFO - Loading Genshin voice dataset split: train
+2025-06-06 23:30:43,997 - tts_trainer - INFO - Dataset loaded with 3 valid samples
+2025-06-06 23:30:46,432 - datasets - INFO - PyTorch version 2.7.1 available.
+2025-06-06 23:30:48,931 - __main__ - ERROR - ❌ Windows multiprocessing error!
+2025-06-06 23:30:48,931 - __main__ - ERROR - This is a common issue on Windows with PyTorch DataLoader
+2025-06-06 23:30:48,932 - __main__ - ERROR - Solutions:
+2025-06-06 23:30:48,932 - __main__ - ERROR -   1. Make sure num_workers=0 in DataLoader
+2025-06-06 23:30:48,932 - __main__ - ERROR -   2. Remove nested functions in collate_fn
+2025-06-06 23:30:48,932 - __main__ - ERROR -   3. Use multiprocessing_context=None
+2025-06-06 23:30:48,932 - __main__ - ERROR - Error: Can't get local object 'main.<locals>.collate_fn'
+2025-06-06 23:30:48,932 - __main__ - INFO - 
+🔧 IMMEDIATE FIX NEEDED:
+2025-06-06 23:30:48,933 - __main__ - INFO - The tts_trainer.py file needs to be updated for Windows compatibility
+2025-06-06 23:30:48,933 - __main__ - INFO - Show me the tts_trainer.py file to fix the DataLoader configuration
+2025-06-06 23:30:48,955 - __main__ - INFO - === Post-Training Summary ===
+2025-06-06 23:30:48,956 - __main__ - INFO - Generated checkpoints: 11
+2025-06-06 23:30:48,956 - __main__ - INFO -   - best_model.pt: 163.2 MB
+2025-06-06 23:30:48,957 - __main__ - INFO -   - checkpoint_epoch_10.pt: 163.2 MB
+2025-06-06 23:30:48,957 - __main__ - INFO -   - checkpoint_epoch_15.pt: 163.2 MB
+2025-06-06 23:30:48,957 - __main__ - INFO -   - checkpoint_epoch_20.pt: 54.2 MB
+2025-06-06 23:30:48,957 - __main__ - INFO -   - checkpoint_epoch_25.pt: 60.6 MB
+2025-06-06 23:30:48,957 - __main__ - INFO -   - checkpoint_epoch_30.pt: 60.6 MB
+2025-06-06 23:30:48,957 - __main__ - INFO -   - checkpoint_epoch_35.pt: 60.6 MB
+2025-06-06 23:30:48,958 - __main__ - INFO -   - checkpoint_epoch_40.pt: 60.6 MB
+2025-06-06 23:30:48,958 - __main__ - INFO -   - checkpoint_epoch_45.pt: 60.6 MB
+2025-06-06 23:30:48,958 - __main__ - INFO -   - checkpoint_epoch_5.pt: 163.2 MB
+2025-06-06 23:30:48,958 - __main__ - INFO -   - checkpoint_epoch_50.pt: 60.6 MB
+2025-06-06 23:30:48,958 - __main__ - INFO - Log files: 1
+2025-06-06 23:30:48,959 - __main__ - INFO -   - tts_training.log
+2025-06-06 23:30:48,959 - __main__ - INFO - Analysis files: 0
+2025-06-06 23:30:48,959 - __main__ - ERROR - ❌ Training failed!
+2025-06-06 23:30:48,959 - __main__ - INFO - Check logs for error details
+2025-06-06 23:31:07,634 - __main__ - INFO - 🎮 === GENSHIN VOICE TTS TRAINING LAUNCHER === 🎵
+2025-06-06 23:31:07,634 - __main__ - INFO - Current directory: C:\Users\Aldrich\Downloads\cutie-chatter-main_chatbots
+2025-06-06 23:31:07,634 - __main__ - INFO - Python version: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+2025-06-06 23:31:07,634 - __main__ - INFO - === Checking Dependencies ===
+2025-06-06 23:31:09,256 - __main__ - INFO - ✅ torch
+2025-06-06 23:31:09,340 - __main__ - INFO - ✅ torchaudio
+2025-06-06 23:31:10,315 - __main__ - INFO - ✅ transformers
+2025-06-06 23:31:10,710 - datasets - INFO - PyTorch version 2.7.1 available.
+2025-06-06 23:31:10,929 - __main__ - INFO - ✅ datasets
+2025-06-06 23:31:10,929 - __main__ - INFO - ✅ huggingface_hub
+2025-06-06 23:31:10,931 - __main__ - INFO - ✅ librosa
+2025-06-06 23:31:10,931 - __main__ - INFO - ✅ numpy
+2025-06-06 23:31:11,071 - __main__ - INFO - ✅ matplotlib
+2025-06-06 23:31:11,071 - __main__ - INFO - ✅ soundfile
+2025-06-06 23:31:11,071 - __main__ - INFO - All dependencies satisfied!
+2025-06-06 23:31:11,071 - __main__ - INFO - === Checking GPU Availability ===
+2025-06-06 23:31:11,071 - __main__ - WARNING - ⚠️  CUDA not available - training will use CPU
+2025-06-06 23:31:11,071 - __main__ - WARNING -    This will be significantly slower!
+2025-06-06 23:31:15,258 - __main__ - INFO - === Checking HuggingFace Authentication ===
+2025-06-06 23:31:16,004 - __main__ - INFO - ✅ Logged in to HuggingFace as: baechuuu
+2025-06-06 23:31:16,004 - __main__ - INFO - === Checking Dataset Availability ===
+2025-06-06 23:31:16,005 - __main__ - INFO - Testing dataset access...
+2025-06-06 23:32:05,346 - __main__ - INFO - ✅ Dataset accessible!
+2025-06-06 23:32:05,346 - __main__ - INFO -    Sample keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:32:05,346 - __main__ - INFO - === Debugging Dataset Structure ===
+2025-06-06 23:32:05,346 - __main__ - INFO - Loading dataset for debugging...
+2025-06-06 23:32:52,623 - __main__ - INFO - Analyzed 5 samples:
+2025-06-06 23:32:52,624 - __main__ - INFO - 
+Sample 1:
+2025-06-06 23:32:52,624 - __main__ - INFO -   Keys: ['audio', 'language', 'npcName', 'text', 'type']
+2025-06-06 23:32:52,624 - __main__ - INFO -   audio: dict with keys ['path', 'array', 'sampling_rate']
+2025-06-06 23:32:52,624 - __main__ - ERROR - Dataset debugging failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-06-06 23:32:52,625 - __main__ - INFO - === Setting Up Training Environment ===
+2025-06-06 23:32:52,625 - __main__ - INFO - ✅ Directory ready: model_checkpoints/
+2025-06-06 23:32:52,626 - __main__ - INFO - ✅ Directory ready: training_logs/
+2025-06-06 23:32:52,626 - __main__ - INFO - ✅ Directory ready: analysis/
+2025-06-06 23:32:52,626 - __main__ - INFO - ✅ Directory ready: temp_audio/
+2025-06-06 23:32:52,626 - __main__ - INFO - ✅ Disk space: 8.7 GB available
+2025-06-06 23:32:52,626 - __main__ - INFO - 🚀 Ready to start training!
+2025-06-06 23:32:52,627 - __main__ - INFO - This process may take several hours...
+2025-06-06 23:32:52,627 - __main__ - WARNING - ⚠️  Training on CPU will be very slow!
+2025-06-06 23:33:00,714 - __main__ - INFO - === Starting TTS Training ===
+2025-06-06 23:33:00,715 - __main__ - INFO - Applying Windows compatibility fixes...
+2025-06-06 23:33:00,715 - __main__ - INFO - ✅ Set multiprocessing method to 'spawn'
+2025-06-06 23:33:00,715 - __main__ - INFO - === Creating Windows Compatibility Patch ===
+2025-06-06 23:33:00,716 - __main__ - INFO - ✅ Created Windows patch: windows_patch.py
+2025-06-06 23:33:00,721 - __main__ - INFO - ✅ Windows patches applied
+2025-06-06 23:33:00,721 - __main__ - INFO - Applying dataset filtering patch...
+2025-06-06 23:33:00,721 - __main__ - INFO - === Creating Dataset Training Patch ===
+2025-06-06 23:33:00,722 - __main__ - INFO - ✅ Created dataset patch file: dataset_patch.py
+2025-06-06 23:33:01,754 - __main__ - INFO - ✅ Dataset patch applied
+2025-06-06 23:33:01,754 - __main__ - INFO - Importing training module...
+2025-06-06 23:33:01,754 - __main__ - INFO - Training started at: Fri Jun  6 23:33:01 2025
+2025-06-06 23:33:01,755 - __main__ - INFO - 🚀 Launching training process...
+2025-06-06 23:33:01,755 - tts_trainer - INFO - Using device: cpu
+2025-06-06 23:33:01,755 - tts_trainer - INFO - Loading Genshin voice dataset split: train
+2025-06-06 23:33:07,158 - tts_trainer - INFO - Dataset loaded with 3 valid samples
+2025-06-06 23:33:09,621 - datasets - INFO - PyTorch version 2.7.1 available.
+2025-06-06 23:33:12,090 - __main__ - ERROR - ❌ Windows multiprocessing error!
+2025-06-06 23:33:12,091 - __main__ - ERROR - This is a common issue on Windows with PyTorch DataLoader
+2025-06-06 23:33:12,091 - __main__ - ERROR - Solutions:
+2025-06-06 23:33:12,091 - __main__ - ERROR -   1. Make sure num_workers=0 in DataLoader
+2025-06-06 23:33:12,091 - __main__ - ERROR -   2. Remove nested functions in collate_fn
+2025-06-06 23:33:12,091 - __main__ - ERROR -   3. Use multiprocessing_context=None
+2025-06-06 23:33:12,092 - __main__ - ERROR - Error: Can't get local object 'main.<locals>.collate_fn'
+2025-06-06 23:33:12,092 - __main__ - INFO - 
+🔧 IMMEDIATE FIX NEEDED:
+2025-06-06 23:33:12,092 - __main__ - INFO - The tts_trainer.py file needs to be updated for Windows compatibility
+2025-06-06 23:33:12,092 - __main__ - INFO - Show me the tts_trainer.py file to fix the DataLoader configuration
+2025-06-06 23:33:12,115 - __main__ - INFO - === Post-Training Summary ===
+2025-06-06 23:33:12,116 - __main__ - INFO - Generated checkpoints: 11
+2025-06-06 23:33:12,116 - __main__ - INFO -   - best_model.pt: 163.2 MB
+2025-06-06 23:33:12,116 - __main__ - INFO -   - checkpoint_epoch_10.pt: 163.2 MB
+2025-06-06 23:33:12,117 - __main__ - INFO -   - checkpoint_epoch_15.pt: 163.2 MB
+2025-06-06 23:33:12,117 - __main__ - INFO -   - checkpoint_epoch_20.pt: 54.2 MB
+2025-06-06 23:33:12,117 - __main__ - INFO -   - checkpoint_epoch_25.pt: 60.6 MB
+2025-06-06 23:33:12,117 - __main__ - INFO -   - checkpoint_epoch_30.pt: 60.6 MB
+2025-06-06 23:33:12,117 - __main__ - INFO -   - checkpoint_epoch_35.pt: 60.6 MB
+2025-06-06 23:33:12,117 - __main__ - INFO -   - checkpoint_epoch_40.pt: 60.6 MB
+2025-06-06 23:33:12,118 - __main__ - INFO -   - checkpoint_epoch_45.pt: 60.6 MB
+2025-06-06 23:33:12,118 - __main__ - INFO -   - checkpoint_epoch_5.pt: 163.2 MB
+2025-06-06 23:33:12,118 - __main__ - INFO -   - checkpoint_epoch_50.pt: 60.6 MB
+2025-06-06 23:33:12,118 - __main__ - INFO - Log files: 1
+2025-06-06 23:33:12,118 - __main__ - INFO -   - tts_training.log
+2025-06-06 23:33:12,119 - __main__ - INFO - Analysis files: 0
+2025-06-06 23:33:12,119 - __main__ - ERROR - ❌ Training failed!
+2025-06-06 23:33:12,119 - __main__ - INFO - Check logs for error details
