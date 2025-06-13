@@ -1,9 +1,10 @@
-# Enhanced cutie.py dengan WebEngine Integration
+# Enhanced cutie.py dengan WebEngine Integration dan Authentication
 
 from PyQt6.QtWidgets import (
     QMainWindow,
     QApplication,
-    QMessageBox
+    QMessageBox,
+    QPushButton
 )
 from PyQt6.QtCore import (
     Qt, 
@@ -12,7 +13,8 @@ from PyQt6.QtCore import (
     QUrl,
     pyqtSlot,
     QObject,
-    pyqtSignal
+    pyqtSignal,
+    QTimer  # DITAMBAHKAN untuk auth
 )
 from PyQt6.QtGui import (
     QIcon
@@ -21,6 +23,8 @@ from PyQt6.QtGui import (
 # Import WebEngine (PENTING!)
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWebChannel import QWebChannel
+from auth_bridge import AuthBridge  # SUDAH ADA - ditambahkan import json
+import json  # DITAMBAHKAN
 
 # Import dengan error handling yang lebih detail
 print("🔍 Starting imports...")
@@ -137,7 +141,6 @@ print("")
 
 class ChatBridge(QObject):
     """Bridge untuk komunikasi antara JavaScript dan Python"""
-    
     # Signals
     messageReceived = pyqtSignal(str)
     responseReady = pyqtSignal(str)
@@ -171,6 +174,29 @@ class ChatBridge(QObject):
         except Exception as e:
             print(f"❌ Error in DeepSeek-R1 streaming: {e}")
             self.streamFinished.emit(f"❌ Error DeepSeek-R1: {str(e)}")
+            
+    @pyqtSlot(str, str)
+    def sendMessageStreamingWithHistory(self, message, historyJSON):
+        """Send message dengan conversation history"""
+        try:
+            print(f"🚀 Starting DeepSeek-R1 streaming with history for: {message}")
+            
+            if self.parent_app:
+                # Parse history JSON
+                conversation_history = json.loads(historyJSON)
+                
+                # Update parent conversation history
+                self.parent_app.conversation_history = conversation_history
+                
+                # Process with streaming
+                self.parent_app.process_message_streaming(message, self)
+            else:
+                self.streamFinished.emit("❌ ERROR: Parent app not available")
+            
+        except Exception as e:
+            print(f"❌ Error in DeepSeek-R1 streaming with history: {e}")
+            self.streamFinished.emit(f"❌ Error DeepSeek-R1: {str(e)}")
+            
     
     @pyqtSlot(result=str)
     def getSystemInfo(self):
@@ -184,9 +210,72 @@ class ChatBridge(QObject):
         return json.dumps(info)
 
 
+class AuthenticatedChatBridge(ChatBridge):
+    """Extended ChatBridge with authentication features"""
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.auth_bridge = parent.auth_bridge if parent else None
+    
+    @pyqtSlot(str, str)
+    def sendMessageStreamingWithAuth(self, message, historyJSON):
+        """Send message dengan authentication check"""
+        try:
+            # Check if user is authenticated and save chat data
+            if self.parent_app and self.parent_app.current_user:
+                # User is authenticated, save chat data periodically
+                if hasattr(self.parent_app, 'save_user_chat_data'):
+                    self.parent_app.save_user_chat_data()
+            
+            # Call original method
+            self.sendMessageStreamingWithHistory(message, historyJSON)
+            
+        except Exception as e:
+            print(f"❌ Error in authenticated messaging: {e}")
+            self.streamFinished.emit(f"❌ Error: {str(e)}")
+    
+    @pyqtSlot(result=str)
+    def getUserInfo(self):
+        """Get current user information"""
+        try:
+            if self.parent_app and self.parent_app.current_user:
+                return json.dumps({
+                    "isAuthenticated": True,
+                    "user": self.parent_app.current_user,
+                    "isGuest": False
+                })
+            elif self.parent_app and self.parent_app.is_guest_mode:
+                return json.dumps({
+                    "isAuthenticated": False,
+                    "user": None,
+                    "isGuest": True
+                })
+            else:
+                return json.dumps({
+                    "isAuthenticated": False,
+                    "user": None,
+                    "isGuest": False
+                })
+        except Exception as e:
+            print(f"❌ Error getting user info: {e}")
+            return json.dumps({
+                "isAuthenticated": False,
+                "user": None,
+                "isGuest": False
+            })
+
+
 class CutieTheCutest(QMainWindow):
-    def __init__(self, model_name="deepseek-r1:1.5b"):
+    def __init__(self, model_name="deepseek-r1:1.5b", show_auth=True):
         super().__init__()
+        
+        # DITAMBAHKAN: Auth system integration
+        self.show_auth = show_auth
+        self.auth_bridge = None
+        self.current_user = None
+        self.is_guest_mode = False
+        self.auth_window = None
+        
         self.setWindowTitle("CutieChatter - Desktop Web Hybrid")
         
         # Initialize settings untuk menyimpan preferensi tema
@@ -227,11 +316,274 @@ class CutieTheCutest(QMainWindow):
         self.user_text_metadata = []
         self.cosine_of_text_metadata = []
         
-        # Setup Web Engine
-        self.setup_web_engine()
-        
-        # Load models (with error handling)
-        self.load_models()
+        # DITAMBAHKAN: Initialize auth system
+        if self.show_auth:
+            self.setup_auth_system()
+        else:
+            # Skip auth and go directly to main app
+            self.setup_main_application()
+
+    # DITAMBAHKAN: Setup auth system
+    def setup_auth_system(self):
+        """Setup authentication system"""
+        try:
+            print("🔐 Setting up authentication system...")
+            
+            # Create auth bridge
+            self.auth_bridge = AuthBridge(self)
+            
+            # Connect auth signals
+            self.auth_bridge.loginSuccessful.connect(self.on_login_successful)
+            self.auth_bridge.logoutRequested.connect(self.on_logout_requested)
+            self.auth_bridge.redirectToMain.connect(self.on_redirect_to_main)
+            self.auth_bridge.showAuthWindow.connect(self.show_auth_window)  # DITAMBAHKAN
+            
+            # Check for existing session
+            session_token = self.get_stored_session()
+            if session_token:
+                # Verify existing session
+                result_json = self.auth_bridge.verifySession(session_token)
+                result = json.loads(result_json)
+                
+                if result["valid"]:
+                    print(f"✅ Valid session found for: {result['user']['username']}")
+                    self.current_user = result["user"]
+                    self.setup_main_application()
+                    return
+                else:
+                    # Clear invalid session
+                    self.clear_stored_session()
+            
+            # Check for guest mode
+            if self.get_stored_guest_mode():
+                print("👤 Guest mode detected")
+                self.is_guest_mode = True
+                self.setup_main_application()
+                return
+            
+            # Show auth window
+            self.show_auth_window()
+            
+        except Exception as e:
+            print(f"❌ Error setting up auth system: {e}")
+            # Fallback to main app without auth
+            self.setup_main_application()
+
+    # DITAMBAHKAN: Show auth window
+    def show_auth_window(self):
+        """Show authentication window"""
+        try:
+            print("🔐 Showing authentication window...")
+            
+            # Hide main window
+            self.hide()
+            
+            # Create auth window
+            from PyQt6.QtWebEngineWidgets import QWebEngineView
+            from PyQt6.QtWebChannel import QWebChannel
+            
+            self.auth_window = QMainWindow()
+            self.auth_window.setWindowTitle("CutieChatter - Login")
+            self.auth_window.setGeometry(100, 100, 500, 700)
+            
+            # Setup auth web view
+            self.auth_web_view = QWebEngineView()
+            
+            # Setup auth communication bridge
+            self.auth_channel = QWebChannel()
+            self.auth_channel.registerObject("authBridge", self.auth_bridge)
+            self.auth_web_view.page().setWebChannel(self.auth_channel)
+            
+            # Load auth HTML
+            auth_html_path = os.path.join(os.path.dirname(__file__), "auth.html")
+            if os.path.exists(auth_html_path):
+                self.auth_web_view.load(QUrl.fromLocalFile(auth_html_path))
+            else:
+                print(f"❌ Auth HTML not found: {auth_html_path}")
+                # Fallback to main app
+                self.setup_main_application()
+                return
+            
+            self.auth_window.setCentralWidget(self.auth_web_view)
+            self.auth_window.show()
+            
+        except Exception as e:
+            print(f"❌ Error showing auth window: {e}")
+            self.setup_main_application()
+
+    # DITAMBAHKAN: Setup main application
+    def setup_main_application(self):
+        """Setup main application after authentication"""
+        try:
+            print("🚀 Setting up main application...")
+            
+            # Close auth window if open
+            if hasattr(self, 'auth_window') and self.auth_window:
+                self.auth_window.close()
+                self.auth_window = None
+            
+            # Load user's chat data if authenticated
+            if self.current_user and self.auth_bridge:
+                self.load_user_chat_data()
+            
+            # Setup Web Engine (original code)
+            self.setup_web_engine()
+            
+            # Load models (original code)
+            self.load_models()
+            
+            # Show main window
+            self.show()
+            
+            print("✅ Main application setup completed")
+            
+        except Exception as e:
+            print(f"❌ Error setting up main application: {e}")
+
+    # DITAMBAHKAN: Handle login successful
+    def on_login_successful(self, login_data):
+        """Handle successful login"""
+        try:
+            print(f"✅ Login successful for: {login_data['user']['username']}")
+            
+            self.current_user = login_data["user"]
+            self.is_guest_mode = False
+            
+            # Store session
+            self.store_session(login_data["session"])
+            self.clear_stored_guest_mode()
+            
+            # Load user's chat data
+            if "chat_data" in login_data and login_data["chat_data"]:
+                self.load_chat_data_from_auth(login_data["chat_data"])
+            
+            # Setup main application
+            self.setup_main_application()
+            
+        except Exception as e:
+            print(f"❌ Error handling login successful: {e}")
+
+    # DITAMBAHKAN: Handle logout
+    def on_logout_requested(self):
+        """Handle logout request"""
+        try:
+            print("🚪 Logout requested")
+            
+            # Save current chat data if user is authenticated
+            if self.current_user and self.auth_bridge:
+                self.save_user_chat_data()
+            
+            # Clear session and user data
+            self.current_user = None
+            self.is_guest_mode = True  # CRITICAL FIX: Set to guest mode after logout
+            self.clear_stored_session()
+            self.store_guest_mode()  # CRITICAL FIX: Store guest mode
+            
+            # Clear conversation history
+            self.clear_conversation_history()
+            
+            # CRITICAL FIX: Clear chat data in web interface for guest transition
+            if hasattr(self, 'web_view') and self.web_view:
+                self.web_view.page().runJavaScript("clearAllChatData();")
+                print("🗑️ Cleared chat data in web interface for guest transition")
+            
+            # Show auth window again (or continue as guest)
+            self.show_auth_window()
+            
+        except Exception as e:
+            print(f"❌ Error handling logout: {e}")
+
+    # DITAMBAHKAN: Handle redirect to main
+    def on_redirect_to_main(self):
+        """Handle redirect to main application"""
+        try:
+            print("🔄 Redirecting to main application...")
+            self.setup_main_application()
+        except Exception as e:
+            print(f"❌ Error handling redirect: {e}")
+
+    # DITAMBAHKAN: Load user chat data
+    def load_user_chat_data(self):
+        """Load user's chat data from database"""
+        try:
+            if not self.auth_bridge:
+                return
+            
+            result_json = self.auth_bridge.loadChatData()
+            result = json.loads(result_json)
+            
+            if result["success"] and result["data"]:
+                self.load_chat_data_from_auth(result["data"])
+                print(f"📂 Loaded {len(result['data'])} chats for user")
+            
+        except Exception as e:
+            print(f"❌ Error loading user chat data: {e}")
+
+    # DITAMBAHKAN: Save user chat data
+    def save_user_chat_data(self):
+        """Save user's chat data to database"""
+        try:
+            if not self.auth_bridge or not self.current_user:
+                return
+            
+            # Get current chat data from web interface
+            chat_data = self.get_current_chat_data()
+            if chat_data:
+                chat_data_json = json.dumps(chat_data)
+                self.auth_bridge.saveChatData(chat_data_json)
+                print("💾 User chat data saved")
+            
+        except Exception as e:
+            print(f"❌ Error saving user chat data: {e}")
+
+    # DITAMBAHKAN: Load chat data from auth
+    def load_chat_data_from_auth(self, chat_data):
+        """Load chat data received from auth system"""
+        try:
+            # This method should inject the chat data into your web interface
+            if hasattr(self, 'web_view') and self.web_view:
+                chat_data_json = json.dumps(chat_data)
+                self.web_view.page().runJavaScript(f"loadUserChatData({chat_data_json});")
+                print("📂 Chat data loaded into web interface")
+            
+        except Exception as e:
+            print(f"❌ Error loading chat data into interface: {e}")
+
+    # DITAMBAHKAN: Get current chat data
+    def get_current_chat_data(self):
+        """Get current chat data from web interface"""
+        try:
+            # This is a placeholder - you'll need to implement JavaScript communication
+            # to get chat data from the web interface
+            return []
+        except Exception as e:
+            print(f"❌ Error getting current chat data: {e}")
+            return []
+
+    # DITAMBAHKAN: Session management methods
+    def store_session(self, session_token):
+        """Store session token"""
+        self.settings.setValue("session_token", session_token)
+
+    def get_stored_session(self):
+        """Get stored session token"""
+        return self.settings.value("session_token", "", type=str)
+
+    def clear_stored_session(self):
+        """Clear stored session"""
+        self.settings.remove("session_token")
+
+    def store_guest_mode(self):
+        """Store guest mode flag"""
+        self.settings.setValue("guest_mode", True)
+
+    def get_stored_guest_mode(self):
+        """Get guest mode flag"""
+        return self.settings.value("guest_mode", False, type=bool)
+
+    def clear_stored_guest_mode(self):
+        """Clear guest mode flag"""
+        self.settings.remove("guest_mode")
 
     def setup_window_geometry(self):
         """Setup window geometry with safe fallbacks"""
@@ -271,10 +623,19 @@ class CutieTheCutest(QMainWindow):
             # Create WebEngine view
             self.web_view = QWebEngineView()
             
-            # Setup communication bridge
-            self.bridge = ChatBridge(self)
+            # Setup communication bridge - DIMODIFIKASI untuk auth
+            if self.current_user or self.is_guest_mode:
+                self.bridge = AuthenticatedChatBridge(self)
+            else:
+                self.bridge = ChatBridge(self)
+                
             self.channel = QWebChannel()
             self.channel.registerObject("bridge", self.bridge)
+            
+            # DITAMBAHKAN: Register auth bridge juga jika ada
+            if self.auth_bridge:
+                self.channel.registerObject("authBridge", self.auth_bridge)
+            
             self.web_view.page().setWebChannel(self.channel)
             
             # Load HTML file
@@ -282,11 +643,13 @@ class CutieTheCutest(QMainWindow):
             
             if os.path.exists(html_path):
                 self.web_view.load(QUrl.fromLocalFile(html_path))
+                self.web_view.loadFinished.connect(self.on_page_loaded)
                 print(f"Loading HTML from: {html_path}")
             else:
                 print(f"HTML file not found: {html_path}")
                 self.create_html_file(html_path)
                 self.web_view.load(QUrl.fromLocalFile(html_path))
+                self.web_view.loadFinished.connect(self.on_page_loaded)
             
             # Set sebagai central widget
             self.setCentralWidget(self.web_view)
@@ -618,114 +981,20 @@ class CutieTheCutest(QMainWindow):
             cursor: not-allowed;
         }
 
-        /* Search Modal */
-        .search-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .search-modal.show {
-            display: flex;
-        }
-
-        .search-modal-content {
-            background: #2a2a2a;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 70%;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .search-modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #333;
-        }
-
-        .search-input {
-            width: 100%;
-            background: #171717;
+        /* Auth Button */
+        .auth-button {
+            background: transparent;
             border: 1px solid #333;
-            border-radius: 8px;
-            padding: 12px 16px;
             color: #fff;
-            font-size: 16px;
-            outline: none;
-        }
-
-        .search-results {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .search-result-item {
-            padding: 12px 16px;
+            padding: 8px 12px;
             border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 8px;
-            transition: all 0.2s;
-        }
-
-        .search-result-item:hover {
-            background: #333;
-        }
-
-        .search-result-title {
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .search-result-preview {
-            font-size: 12px;
-            color: #8e8ea0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Context Menu */
-        .context-menu {
-            position: absolute;
-            background: #2a2a2a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            z-index: 1000;
-            display: none;
-            min-width: 150px;
-        }
-
-        .context-menu-item {
-            padding: 12px 16px;
             cursor: pointer;
             font-size: 14px;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .context-menu-item:hover {
+        .auth-button:hover {
             background: #333;
-        }
-
-        .context-menu-item.danger {
-            color: #ef4444;
-        }
-
-        .context-menu-item.danger:hover {
-            background: rgba(239, 68, 68, 0.1);
         }
 
         /* Loading animation */
@@ -781,11 +1050,16 @@ class CutieTheCutest(QMainWindow):
                 <button class="toggle-sidebar" onclick="toggleSidebar()">
                     <span id="sidebarToggleText">📦 Tutup sidebar</span>
                 </button>
-                <select class="model-selector">
-                    <option>DeepSeek-R1</option>
-                    <option>GPT-4</option>
-                    <option>Claude-3</option>
-                </select>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select class="model-selector">
+                        <option>DeepSeek-R1</option>
+                        <option>GPT-4</option>
+                        <option>Claude-3</option>
+                    </select>
+                    <button class="auth-button" id="authButton" onclick="handleAuthAction()">
+                        <span id="authButtonText">Loading...</span>
+                    </button>
+                </div>
             </div>
 
             <div class="chat-messages" id="chatMessages">
@@ -813,54 +1087,27 @@ class CutieTheCutest(QMainWindow):
         </div>
     </div>
 
-    <!-- Search Modal -->
-    <div class="search-modal" id="searchModal" onclick="closeSearchModal(event)">
-        <div class="search-modal-content" onclick="event.stopPropagation()">
-            <div class="search-modal-header">
-                <input 
-                    type="text" 
-                    class="search-input" 
-                    id="searchInput" 
-                    placeholder="Cari obrolan..." 
-                    oninput="searchChats()"
-                >
-            </div>
-            <div class="search-results" id="searchResults">
-                <!-- Search results will be shown here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Context Menu -->
-    <div class="context-menu" id="contextMenu">
-        <div class="context-menu-item" onclick="renameChat()">
-            <span>✏️</span>
-            <span>Rename</span>
-        </div>
-        <div class="context-menu-item danger" onclick="deleteChat()">
-            <span>🗑️</span>
-            <span>Delete</span>
-        </div>
-    </div>
-
     <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
     <script>
         // Global variables
         let chats = JSON.parse(localStorage.getItem('chats')) || [];
         let currentChatId = null;
         let sidebarVisible = true;
-        let selectedChatForContext = null;
         let bridge = null;
+        let authBridge = null;
         let currentAIMessageElement = null;
         let isStreaming = false;
+        let userInfo = null;
 
         // Initialize WebChannel communication
         new QWebChannel(qt.webChannelTransport, function(channel) {
             bridge = channel.objects.bridge;
-            console.log("✅ Bridge connected:", bridge);
+            authBridge = channel.objects.authBridge;
             
-            // List available methods
-            console.log("📋 Available bridge methods:", Object.getOwnPropertyNames(bridge));
+            console.log("✅ Bridge connected:", bridge);
+            if (authBridge) {
+                console.log("✅ Auth Bridge connected:", authBridge);
+            }
             
             // Connect streaming signals
             if (bridge.streamChunk) {
@@ -868,9 +1115,6 @@ class CutieTheCutest(QMainWindow):
                     console.log("📥 Received chunk from DeepSeek-R1:", chunk);
                     appendToCurrentAIMessage(chunk);
                 });
-                console.log("✅ streamChunk signal connected");
-            } else {
-                console.error("❌ streamChunk signal not available!");
             }
             
             if (bridge.streamFinished) {
@@ -878,17 +1122,76 @@ class CutieTheCutest(QMainWindow):
                     console.log("✅ DeepSeek-R1 response finished:", response);
                     finishAIMessage(response);
                 });
-                console.log("✅ streamFinished signal connected");
-            } else {
-                console.error("❌ streamFinished signal not available!");
             }
-            
-            if (bridge.sendMessageStreaming) {
-                console.log("✅ sendMessageStreaming method available");
-            } else {
-                console.error("❌ sendMessageStreaming method not available!");
+
+            // Get user info if available
+            if (bridge.getUserInfo) {
+                try {
+                    const userInfoStr = bridge.getUserInfo();
+                    userInfo = JSON.parse(userInfoStr);
+                    updateAuthButton();
+                    console.log("👤 User info:", userInfo);
+                } catch (e) {
+                    console.error("❌ Error getting user info:", e);
+                }
             }
         });
+
+        // Auth functions
+        function updateAuthButton() {
+            const authButton = document.getElementById('authButtonText');
+            if (!authButton) return;
+
+            if (userInfo && userInfo.isAuthenticated) {
+                authButton.textContent = `👤 ${userInfo.user.username}`;
+                document.getElementById('authButton').onclick = () => showUserMenu();
+            } else if (userInfo && userInfo.isGuest) {
+                authButton.textContent = '🔑 Login';
+                document.getElementById('authButton').onclick = () => handleLogin();
+            } else {
+                authButton.textContent = '🔑 Login';
+                document.getElementById('authButton').onclick = () => handleLogin();
+            }
+        }
+
+        function handleAuthAction() {
+            if (userInfo && userInfo.isAuthenticated) {
+                showUserMenu();
+            } else {
+                handleLogin();
+            }
+        }
+
+        function handleLogin() {
+            if (authBridge) {
+                authBridge.showLoginForm();
+            } else {
+                alert('Authentication not available');
+            }
+        }
+
+        function showUserMenu() {
+            // Simple logout for now
+            if (confirm('Logout dari akun Anda?')) {
+                if (authBridge) {
+                    authBridge.logout();
+                }
+            }
+        }
+
+        function loadUserChatData(chatData) {
+            // Load chat data from auth system
+            try {
+                if (chatData && Array.isArray(chatData)) {
+                    chats = chatData;
+                    saveChatHistory();
+                    loadChatHistory();
+                    console.log(`📂 Loaded ${chatData.length} chats from server`);
+                }
+            } catch (e) {
+                console.error("❌ Error loading user chat data:", e);
+            }
+        }
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
@@ -898,7 +1201,7 @@ class CutieTheCutest(QMainWindow):
             }
         });
 
-        // Sidebar functions
+        // Rest of your existing JavaScript functions...
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const toggleText = document.getElementById('sidebarToggleText');
@@ -914,7 +1217,6 @@ class CutieTheCutest(QMainWindow):
             }
         }
 
-        // Chat management functions
         function createNewChat() {
             const newChat = {
                 id: Date.now().toString(),
@@ -981,9 +1283,16 @@ class CutieTheCutest(QMainWindow):
 
         function saveChatHistory() {
             localStorage.setItem('chats', JSON.stringify(chats));
+            // Save to server if authenticated
+            if (userInfo && userInfo.isAuthenticated && authBridge) {
+                try {
+                    authBridge.saveChatData(JSON.stringify(chats));
+                } catch (e) {
+                    console.error("❌ Error saving to server:", e);
+                }
+            }
         }
 
-        // Message functions
         function sendMessage() {
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
@@ -1013,19 +1322,10 @@ class CutieTheCutest(QMainWindow):
 
             // Send to Python backend
             if (bridge) {
-                if (!bridge.sendMessageStreaming) {
-                    console.error("❌ CRITICAL: sendMessageStreaming method not available!");
-                    removeTypingIndicator();
-                    finishAIMessage("❌ ERROR: sendMessageStreaming tidak tersedia");
-                    return;
-                }
-                
                 isStreaming = true;
                 
-                console.log("🚀 Calling bridge.sendMessageStreaming with:", message);
                 try {
                     bridge.sendMessageStreaming(message);
-                    console.log("✅ bridge.sendMessageStreaming called successfully");
                 } catch (error) {
                     console.error("❌ Error calling bridge.sendMessageStreaming:", error);
                     removeTypingIndicator();
@@ -1157,122 +1457,6 @@ class CutieTheCutest(QMainWindow):
             }
         }
 
-        function generateAIResponse(userMessage) {
-            // TIDAK ADA fallback response - ini seharusnya tidak pernah dipanggil
-            console.error("generateAIResponse called - this should not happen!");
-            return "❌ ERROR: generateAIResponse called instead of using DeepSeek-R1";
-        }
-
-        // Search functions
-        function openSearchModal() {
-            document.getElementById('searchModal').classList.add('show');
-            document.getElementById('searchInput').focus();
-            searchChats(); // Show all chats initially
-        }
-
-        function closeSearchModal(event) {
-            if (event.target === document.getElementById('searchModal')) {
-                document.getElementById('searchModal').classList.remove('show');
-                document.getElementById('searchInput').value = '';
-            }
-        }
-
-        function searchChats() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const resultsContainer = document.getElementById('searchResults');
-            
-            const filteredChats = chats.filter(chat => 
-                chat.title.toLowerCase().includes(searchTerm) ||
-                chat.messages.some(msg => msg.content.toLowerCase().includes(searchTerm))
-            );
-
-            resultsContainer.innerHTML = '';
-
-            if (filteredChats.length === 0) {
-                resultsContainer.innerHTML = '<div style="text-align: center; color: #8e8ea0; padding: 20px;">Tidak ada hasil ditemukan</div>';
-                return;
-            }
-
-            filteredChats.forEach(chat => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'search-result-item';
-                resultItem.onclick = () => {
-                    loadChat(chat.id);
-                    closeSearchModal({ target: document.getElementById('searchModal') });
-                };
-
-                const preview = chat.messages.length > 0 
-                    ? chat.messages[chat.messages.length - 1].content 
-                    : 'Belum ada pesan';
-
-                resultItem.innerHTML = `
-                    <div class="search-result-title">${chat.title}</div>
-                    <div class="search-result-preview">${preview}</div>
-                `;
-
-                resultsContainer.appendChild(resultItem);
-            });
-        }
-
-        // Context menu functions
-        function showContextMenu(event, chatId) {
-            event.stopPropagation();
-            selectedChatForContext = chatId;
-            
-            const contextMenu = document.getElementById('contextMenu');
-            contextMenu.style.display = 'block';
-            contextMenu.style.left = event.pageX + 'px';
-            contextMenu.style.top = event.pageY + 'px';
-        }
-
-        function hideContextMenu() {
-            document.getElementById('contextMenu').style.display = 'none';
-            selectedChatForContext = null;
-        }
-
-        function renameChat() {
-            if (!selectedChatForContext) return;
-            
-            const chat = chats.find(c => c.id === selectedChatForContext);
-            if (!chat) return;
-
-            const newTitle = prompt('Nama baru untuk obrolan:', chat.title);
-            if (newTitle && newTitle.trim()) {
-                chat.title = newTitle.trim();
-                saveChatHistory();
-                loadChatHistory();
-            }
-            
-            hideContextMenu();
-        }
-
-        function deleteChat() {
-            if (!selectedChatForContext) return;
-            
-            if (confirm('Apakah Anda yakin ingin menghapus obrolan ini?')) {
-                chats = chats.filter(c => c.id !== selectedChatForContext);
-                saveChatHistory();
-                loadChatHistory();
-                
-                if (currentChatId === selectedChatForContext) {
-                    if (chats.length > 0) {
-                        loadChat(chats[0].id);
-                    } else {
-                        currentChatId = null;
-                        document.getElementById('chatMessages').innerHTML = `
-                            <div class="empty-state">
-                                <h1>Apa yang bisa saya bantu?</h1>
-                                <p>Mulai percakapan baru dengan mengetik pesan di bawah</p>
-                            </div>
-                        `;
-                    }
-                }
-            }
-            
-            hideContextMenu();
-        }
-
-        // Input handling
         function handleKeyDown(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
@@ -1285,22 +1469,15 @@ class CutieTheCutest(QMainWindow):
             textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
         }
 
-        // Event listeners
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('.context-menu') && !event.target.closest('.chat-item-menu')) {
-                hideContextMenu();
-            }
-        });
+        // Placeholder functions for search and context menu
+        function openSearchModal() {
+            alert('Search functionality coming soon!');
+        }
 
-        // Close search modal with Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const searchModal = document.getElementById('searchModal');
-                if (searchModal.classList.contains('show')) {
-                    closeSearchModal({ target: searchModal });
-                }
-            }
-        });
+        function showContextMenu(event, chatId) {
+            event.stopPropagation();
+            alert('Context menu coming soon!');
+        }
     </script>
 </body>
 </html>'''
@@ -1311,6 +1488,48 @@ class CutieTheCutest(QMainWindow):
             print(f"HTML file created: {html_path}")
         except Exception as e:
             print(f"Error creating HTML file: {e}")
+
+    def on_page_loaded(self, success):
+        """Called when web page is loaded"""
+        if success:
+            print("✅ Web page loaded successfully")
+            
+            # DITAMBAHKAN: Inject user info and auth status
+            self.inject_user_info()
+            
+            # Inject initial theme after a short delay
+            self.web_view.page().runJavaScript("setTimeout(() => { console.log('Page ready for theme injection'); }, 100);")
+        else:
+            print("❌ Web page failed to load")
+
+    # DITAMBAHKAN: Inject user info
+    def inject_user_info(self):
+        """Inject user information into web interface"""
+        try:
+            if self.current_user:
+                user_info = {
+                    "isAuthenticated": True,
+                    "isGuest": False,
+                    "user": self.current_user
+                }
+            elif self.is_guest_mode:
+                user_info = {
+                    "isAuthenticated": False,
+                    "isGuest": True,
+                    "user": None
+                }
+            else:
+                user_info = {
+                    "isAuthenticated": False,
+                    "isGuest": False,
+                    "user": None
+                }
+            
+            user_info_json = json.dumps(user_info)
+            self.web_view.page().runJavaScript(f"window.userInfo = {user_info_json}; console.log('User info injected:', window.userInfo);")
+            
+        except Exception as e:
+            print(f"❌ Error injecting user info: {e}")
 
     def process_message_sync(self, message):
         """Process pesan secara synchronous untuk WebChannel"""
@@ -1753,7 +1972,7 @@ class CutieTheCutest(QMainWindow):
             if "Connection" in str(e) or "refused" in str(e):
                 return "🚫 Tidak dapat terhubung ke Ollama. Pastikan Ollama server sudah berjalan dengan menjalankan 'ollama serve' di terminal."
             elif "not found" in str(e) or "model" in str(e).lower():
-                                    return f"🚫 Model DeepSeek-R1 ({self.model_name}) tidak ditemukan. Jalankan 'ollama pull {self.model_name}' untuk mendownload model."
+                return f"🚫 Model DeepSeek-R1 ({self.model_name}) tidak ditemukan. Jalankan 'ollama pull {self.model_name}' untuk mendownload model."
             else:
                 return f"🚫 Error DeepSeek-R1: {str(e)}"
 
@@ -1881,16 +2100,6 @@ class CutieTheCutest(QMainWindow):
             self.ModelForSentimentScoring = None
             self.ModelForCS = None
             self.tokenizer = None
-
-    def naked_text(self, text):
-        """Clean text from HTML and special markers"""
-        text = re.sub(r'<\s*/\s*div\s*>', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'<\s*/\s*response\s*>', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'---', '', text)
-        text = re.sub(r'<\s*think\s*>', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'<\s*/\s*think\s*>', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'<\s*/?\s*th?i?n?k?\s*/?>', '', text, flags=re.IGNORECASE)
-        return text
 
     def GetSentimentOnPrimary(self, text):
         """Get sentiment analysis for given text"""
@@ -2051,6 +2260,10 @@ class CutieTheCutest(QMainWindow):
     def closeEvent(self, event):
         """Handle application close event"""
         try:
+            # DITAMBAHKAN: Save user data before closing
+            if self.current_user and self.auth_bridge:
+                self.save_user_chat_data()
+            
             # Save current theme setting
             self.settings.setValue("dark_theme", self.is_dark_theme)
             
@@ -2092,15 +2305,29 @@ def main():
         # Set application style
         app.setStyle('Fusion')
         
-        # Create main window
+        # DITAMBAHKAN: Parse command line arguments for auth
         model_name = "deepseek-r1:1.5b"  # Default model
-        if len(sys.argv) > 1:
-            model_name = sys.argv[1]
-            
-        window = CutieTheCutest(model_name=model_name)
-        window.show()
+        show_auth = True  # Default to showing auth
+        
+        for i, arg in enumerate(sys.argv):
+            if arg == "--model" and i + 1 < len(sys.argv):
+                model_name = sys.argv[i + 1]
+            elif arg == "--no-auth":
+                show_auth = False
+            elif arg == "--guest":
+                show_auth = False  # Skip auth and go directly to guest mode
+        
+        # Create main window
+        window = CutieTheCutest(model_name=model_name, show_auth=show_auth)
+        
+        # DITAMBAHKAN: Setup periodic session cleanup
+        if show_auth and window.auth_bridge:
+            cleanup_timer = QTimer()
+            cleanup_timer.timeout.connect(window.auth_bridge.cleanup_expired_sessions)
+            cleanup_timer.start(300000)  # 5 minutes
         
         print(f"CutieChatter started with model: {model_name}")
+        print(f"Authentication: {'Enabled' if show_auth else 'Disabled'}")
         print("Available features:")
         print(f"  - Transformers: {'✓' if TRANSFORMERS_AVAILABLE else '✗'}")
         print(f"  - Backends: {'✓' if BACKENDS_AVAILABLE else '✗'}")

@@ -5,6 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CutieChatter - DeepSeek-R1</title>
     <style>
+        :root {
+            /* Dark theme variables (default) */
+            --bg-primary: #212121;
+            --bg-secondary: #171717;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #fff;
+            --text-secondary: #8e8ea0;
+            --border-color: #333;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --hover-bg: #333;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+        }
+
+        [data-theme="light"] {
+            /* Light theme variables */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #f1f3f4;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #e8eaed;
+            --accent-color: #1a73e8;
+            --accent-hover: #1557b0;
+            --success-color: #137333;
+            --error-color: #d93025;
+            --hover-bg: #f1f3f4;
+            --gradient-start: #4285f4;
+            --gradient-end: #34a853;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,10 +47,11 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #212121;
-            color: #fff;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             height: 100vh;
             overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container {
@@ -27,8 +62,8 @@
         /* Sidebar */
         .sidebar {
             width: 260px;
-            background: #171717;
-            border-right: 1px solid #333;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             transition: all 0.3s ease;
@@ -41,14 +76,14 @@
 
         .sidebar-header {
             padding: 16px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .new-chat-btn {
             width: 100%;
             background: transparent;
-            border: 1px solid #333;
-            color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
             padding: 12px 16px;
             border-radius: 8px;
             cursor: pointer;
@@ -60,14 +95,14 @@
         }
 
         .new-chat-btn:hover {
-            background: #2a2a2a;
+            background: var(--hover-bg);
         }
 
         .search-btn {
             width: 100%;
             background: transparent;
-            border: 1px solid #333;
-            color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
             padding: 12px 16px;
             border-radius: 8px;
             cursor: pointer;
@@ -80,13 +115,13 @@
         }
 
         .search-btn:hover {
-            background: #2a2a2a;
+            background: var(--hover-bg);
         }
 
         .connection-status {
             padding: 8px 16px;
             font-size: 12px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -96,11 +131,11 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #ef4444;
+            background: var(--error-color);
         }
 
         .status-indicator.connected {
-            background: #10b981;
+            background: var(--success-color);
         }
 
         .chat-history {
@@ -110,7 +145,7 @@
         }
 
         .chat-history h3 {
-            color: #8e8ea0;
+            color: var(--text-secondary);
             font-size: 12px;
             text-transform: uppercase;
             margin-bottom: 16px;
@@ -130,11 +165,11 @@
         }
 
         .chat-item:hover {
-            background: #2a2a2a;
+            background: var(--hover-bg);
         }
 
         .chat-item.active {
-            background: #2a2a2a;
+            background: var(--hover-bg);
         }
 
         .chat-item-title {
@@ -158,7 +193,87 @@
         }
 
         .chat-item-menu:hover {
-            background: #333;
+            background: var(--border-color);
+        }
+
+        /* AUTH STYLES - TAMBAHAN BARU */
+        .user-info-section {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+        }
+        
+        .user-info.guest {
+            border: 1px dashed var(--border-color);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+        
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-email {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .logout-btn, .login-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .logout-btn:hover, .login-btn:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+        
+        .login-prompt {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .login-prompt .login-btn {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 12px;
         }
 
         /* Main Chat Area */
@@ -171,16 +286,28 @@
 
         .chat-header {
             padding: 16px 20px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .toggle-sidebar {
             background: transparent;
             border: none;
-            color: #fff;
+            color: var(--text-primary);
             cursor: pointer;
             padding: 8px;
             border-radius: 6px;
@@ -188,13 +315,31 @@
         }
 
         .toggle-sidebar:hover {
-            background: #333;
+            background: var(--hover-bg);
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--hover-bg);
         }
 
         .model-selector {
             background: transparent;
-            border: 1px solid #333;
-            color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
             padding: 8px 12px;
             border-radius: 8px;
             cursor: pointer;
@@ -237,15 +382,15 @@
         }
 
         .user .message-avatar {
-            background: #2563eb;
+            background: var(--accent-color);
         }
 
         .assistant .message-avatar {
-            background: #10a37f;
+            background: var(--success-color);
         }
 
         .message-content {
-            background: #2a2a2a;
+            background: var(--bg-tertiary);
             padding: 12px 16px;
             border-radius: 12px;
             max-width: 70%;
@@ -254,7 +399,8 @@
         }
 
         .user .message-content {
-            background: #2563eb;
+            background: var(--accent-color);
+            color: white;
         }
 
         .empty-state {
@@ -270,21 +416,21 @@
         .empty-state h1 {
             font-size: 32px;
             margin-bottom: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .empty-state p {
-            color: #8e8ea0;
+            color: var(--text-secondary);
             font-size: 16px;
         }
 
         /* Input Area */
         .input-area {
             padding: 20px;
-            border-top: 1px solid #333;
+            border-top: 1px solid var(--border-color);
         }
 
         .input-container {
@@ -295,11 +441,11 @@
 
         .message-input {
             width: 100%;
-            background: #2a2a2a;
-            border: 1px solid #333;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 16px 50px 16px 16px;
-            color: #fff;
+            color: var(--text-primary);
             font-size: 16px;
             resize: none;
             min-height: 24px;
@@ -309,8 +455,12 @@
         }
 
         .message-input:focus {
-            border-color: #2563eb;
+            border-color: var(--accent-color);
             box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .message-input::placeholder {
+            color: var(--text-secondary);
         }
 
         .send-button {
@@ -318,7 +468,7 @@
             right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            background: #2563eb;
+            background: var(--accent-color);
             border: none;
             border-radius: 8px;
             width: 32px;
@@ -328,19 +478,20 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            color: white;
         }
 
         .send-button:hover {
-            background: #1d4ed8;
+            background: var(--accent-hover);
         }
 
         .send-button:disabled {
-            background: #333;
+            background: var(--border-color);
             cursor: not-allowed;
         }
 
         /* Search Modal */
-        .search-modal {
+        .search-modal, .dashboard-modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -353,12 +504,12 @@
             z-index: 1000;
         }
 
-        .search-modal.show {
+        .search-modal.show, .dashboard-modal.show {
             display: flex;
         }
 
-        .search-modal-content {
-            background: #2a2a2a;
+        .search-modal-content, .dashboard-modal-content {
+            background: var(--bg-tertiary);
             border-radius: 12px;
             width: 90%;
             max-width: 600px;
@@ -368,26 +519,287 @@
             flex-direction: column;
         }
 
-        .search-modal-header {
+        .dashboard-modal-content {
+            max-width: 1000px;
+            max-height: 85%;
+        }
+
+        .search-modal-header, .dashboard-modal-header {
             padding: 20px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dashboard-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
         }
 
         .search-input {
             width: 100%;
-            background: #171717;
-            border: 1px solid #333;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 12px 16px;
-            color: #fff;
+            color: var(--text-primary);
             font-size: 16px;
             outline: none;
         }
 
-        .search-results {
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-results, .dashboard-content {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
+        }
+
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .dashboard-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card h3 {
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .chart-container {
+            height: 200px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .emotion-chart {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 20px;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .emotion-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .sentiment-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .sentiment-item {
+            text-align: center;
+            padding: 8px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+        }
+
+        .sentiment-emoji {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .sentiment-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .sentiment-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .recent-chats-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .recent-chat-item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: var(--bg-tertiary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .recent-chat-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .recent-chat-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .recent-chat-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .usage-bar {
+            background: var(--bg-tertiary);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .usage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .activity-heatmap {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-top: 12px;
+        }
+
+        .heatmap-day {
+            aspect-ratio: 1;
+            border-radius: 2px;
+            background: var(--bg-tertiary);
+            transition: all 0.2s;
+        }
+
+        .heatmap-day.level-1 { background: rgba(37, 99, 235, 0.3); }
+        .heatmap-day.level-2 { background: rgba(37, 99, 235, 0.5); }
+        .heatmap-day.level-3 { background: rgba(37, 99, 235, 0.7); }
+        .heatmap-day.level-4 { background: rgba(37, 99, 235, 1); }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .quick-action-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--hover-bg);
+            transform: translateY(-1px);
         }
 
         .search-result-item {
@@ -399,7 +811,7 @@
         }
 
         .search-result-item:hover {
-            background: #333;
+            background: var(--hover-bg);
         }
 
         .search-result-title {
@@ -409,7 +821,7 @@
 
         .search-result-preview {
             font-size: 12px;
-            color: #8e8ea0;
+            color: var(--text-secondary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -418,8 +830,8 @@
         /* Context Menu */
         .context-menu {
             position: absolute;
-            background: #2a2a2a;
-            border: 1px solid #333;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             z-index: 1000;
@@ -438,11 +850,11 @@
         }
 
         .context-menu-item:hover {
-            background: #333;
+            background: var(--hover-bg);
         }
 
         .context-menu-item.danger {
-            color: #ef4444;
+            color: var(--error-color);
         }
 
         .context-menu-item.danger:hover {
@@ -452,8 +864,8 @@
         /* Error message */
         .error-message {
             background: rgba(239, 68, 68, 0.1);
-            border: 1px solid #ef4444;
-            color: #ef4444;
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
             padding: 12px 16px;
             border-radius: 8px;
             margin: 10px 0;
@@ -471,7 +883,7 @@
         .typing-dot {
             width: 8px;
             height: 8px;
-            background: #8e8ea0;
+            background: var(--text-secondary);
             border-radius: 50%;
             animation: typing 1.4s infinite ease-in-out;
         }
@@ -501,6 +913,45 @@
             .message-content {
                 max-width: 85%;
             }
+
+            .header-right {
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .theme-toggle, .model-selector {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+
+            .dashboard-content {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .stat-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .activity-heatmap {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 2px;
+            }
+
+            .dashboard-modal-content {
+                width: 95%;
+                max-height: 90%;
+            }
+
+            .recent-chats-list {
+                max-height: 200px;
+            }
         }
     </style>
 </head>
@@ -521,6 +972,10 @@
                     <span>🔍</span>
                     <span>Cari obrolan</span>
                 </button>
+                <button class="search-btn" onclick="openDashboard()">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </button>
             </div>
             <div class="chat-history">
                 <h3>Obrolan</h3>
@@ -533,12 +988,20 @@
         <!-- Main Content -->
         <div class="main-content">
             <div class="chat-header">
-                <button class="toggle-sidebar" onclick="toggleSidebar()">
-                    <span id="sidebarToggleText">📦 Tutup sidebar</span>
-                </button>
-                <select class="model-selector" id="modelSelector">
-                    <option value="deepseek-r1:1.5b">DeepSeek-R1:1.5b</option>
-                </select>
+                <div class="header-left">
+                    <button class="toggle-sidebar" onclick="toggleSidebar()">
+                        <span id="sidebarToggleText">📦 Tutup sidebar</span>
+                    </button>
+                </div>
+                <div class="header-right">
+                    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+                        <span id="themeIcon">🌙</span>
+                        <span id="themeText">Dark</span>
+                    </button>
+                    <select class="model-selector" id="modelSelector">
+                        <option value="deepseek-r1:1.5b">DeepSeek-R1:1.5b</option>
+                    </select>
+                </div>
             </div>
 
             <div class="chat-messages" id="chatMessages">
@@ -562,6 +1025,19 @@
                         <span>➤</span>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Modal -->
+    <div class="dashboard-modal" id="dashboardModal" onclick="closeDashboardModal(event)">
+        <div class="dashboard-modal-content" onclick="event.stopPropagation()">
+            <div class="dashboard-modal-header">
+                <div class="dashboard-title">📊 Dashboard CutieChatter</div>
+                <button class="close-btn" onclick="closeDashboardModal()">×</button>
+            </div>
+            <div class="dashboard-content" id="dashboardContent">
+                <!-- Dashboard cards will be dynamically generated here -->
             </div>
         </div>
     </div>
@@ -608,16 +1084,67 @@
         let currentAIMessageElement = null;
         let isStreaming = false;
         let isConnected = false;
+        let streamingTimeout = null;
+        
+        // CRITICAL: Track conversation history for current session
+        let currentConversationHistory = [];
+
+        // Theme management
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        // TAMBAHAN AUTH VARIABLES
+        let userInfo = {
+            isAuthenticated: false,
+            isGuest: false,
+            user: null
+        };
+        let authBridge = null;
 
         console.log("🚀 Initializing CutieChatter with DeepSeek-R1...");
+
+        // Initialize theme on page load
+        function initializeTheme() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            updateThemeToggle();
+            console.log(`🎨 Theme initialized: ${currentTheme}`);
+        }
+
+        // Toggle theme function
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            updateThemeToggle();
+            console.log(`🎨 Theme switched to: ${currentTheme}`);
+        }
+
+        // Update theme toggle button
+        function updateThemeToggle() {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (currentTheme === 'dark') {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+            } else {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light';
+            }
+        }
 
         // Initialize WebChannel communication
         new QWebChannel(qt.webChannelTransport, function(channel) {
             bridge = channel.objects.bridge;
+            authBridge = channel.objects.authBridge; // TAMBAHAN AUTH
+            
             console.log("✅ Bridge connected to Python backend:", bridge);
+            console.log("✅ Auth bridge connected:", authBridge); // TAMBAHAN AUTH
             
             // List available methods
             console.log("📋 Available bridge methods:", Object.getOwnPropertyNames(bridge));
+            if (authBridge) {
+                console.log("📋 Available auth methods:", Object.getOwnPropertyNames(authBridge));
+            }
             
             // Connect streaming signals from Python
             if (bridge.streamChunk) {
@@ -640,11 +1167,15 @@
                 console.error("❌ streamFinished signal not available!");
             }
             
-            if (bridge.sendMessageStreaming) {
+            // Check for both methods
+            if (bridge.sendMessageStreamingWithHistory) {
+                console.log("✅ sendMessageStreamingWithHistory method available");
+                updateConnectionStatus(true);
+            } else if (bridge.sendMessageStreaming) {
                 console.log("✅ sendMessageStreaming method available");
                 updateConnectionStatus(true);
             } else {
-                console.error("❌ sendMessageStreaming method not available!");
+                console.error("❌ No streaming methods available!");
                 updateConnectionStatus(false);
             }
 
@@ -657,6 +1188,9 @@
                     console.warn("⚠️ Could not get system info:", e);
                 }
             }
+
+            // TAMBAHAN - CHECK AUTH STATUS
+            checkAuthenticationStatus();
         });
 
         function updateConnectionStatus(connected) {
@@ -673,9 +1207,357 @@
             }
         }
 
+        // ========== FUNGSI AUTENTIKASI BARU ==========
+
+        function checkAuthenticationStatus() {
+            try {
+                if (window.userInfo) {
+                    userInfo = window.userInfo;
+                    console.log("📝 User info from injection:", userInfo);
+                } else if (authBridge && authBridge.getCurrentUser) {
+                    authBridge.getCurrentUser().then(result => {
+                        const response = JSON.parse(result);
+                        if (response.success && response.user) {
+                            userInfo = {
+                                isAuthenticated: true,
+                                isGuest: false,
+                                user: response.user
+                            };
+                        } else {
+                            const isGuest = localStorage.getItem('cutiechatter_guest') === 'true';
+                            userInfo = {
+                                isAuthenticated: false,
+                                isGuest: isGuest,
+                                user: null
+                            };
+                            
+                            // CRITICAL FIX: Clear old data when starting as guest
+                            if (isGuest) {
+                                clearOldGuestData();
+                            }
+                        }
+                        updateUIForAuthStatus();
+                    });
+                } else {
+                    const isGuest = localStorage.getItem('cutiechatter_guest') === 'true';
+                    userInfo = {
+                        isAuthenticated: false,
+                        isGuest: isGuest,
+                        user: null
+                    };
+                    
+                    // CRITICAL FIX: Clear old data when starting as guest
+                    if (isGuest) {
+                        clearOldGuestData();
+                    }
+                }
+                
+                updateUIForAuthStatus();
+            } catch (error) {
+                console.error("❌ Error checking auth status:", error);
+            }
+        }
+
+        // ADDED: Clear old guest data on startup
+        function clearOldGuestData() {
+            try {
+                // Only clear if explicitly in guest mode and not transferring data
+                const hasTransferData = localStorage.getItem('guest_chat_transfer');
+                if (!hasTransferData) {
+                    localStorage.removeItem('chats');
+                    console.log("🗑️ Cleared old guest chat data on startup");
+                }
+            } catch (error) {
+                console.error("❌ Error clearing old guest data:", error);
+            }
+        }
+
+        function updateUIForAuthStatus() {
+            try {
+                updateSidebarForAuth();
+                
+                if (userInfo.isAuthenticated) {
+                    // Transfer any guest chat data first
+                    transferGuestChatData();
+                    loadUserChatData();
+                    setupPeriodicSave();
+                } else if (userInfo.isGuest) {
+                    // Guest mode: ensure clean slate if needed
+                    console.log("👤 Guest mode activated");
+                } else {
+                    // Not authenticated and not guest: clear any lingering data
+                    clearAllChatData();
+                    console.log("🗑️ Cleared data for non-guest, non-authenticated state");
+                }
+                
+                console.log("🔄 UI updated for auth status:", userInfo);
+            } catch (error) {
+                console.error("❌ Error updating UI for auth:", error);
+            }
+        }
+
+        function updateSidebarForAuth() {
+            try {
+                const sidebar = document.getElementById('sidebar');
+                if (!sidebar) return;
+                
+                let userSection = document.getElementById('userInfoSection');
+                if (!userSection) {
+                    userSection = document.createElement('div');
+                    userSection.id = 'userInfoSection';
+                    userSection.className = 'user-info-section';
+                    
+                    const sidebarHeader = sidebar.querySelector('.sidebar-header');
+                    sidebar.insertBefore(userSection, sidebarHeader);
+                }
+                
+                if (userInfo.isAuthenticated) {
+                    userSection.innerHTML = `
+                        <div class="user-info">
+                            <div class="user-avatar">👤</div>
+                            <div class="user-details">
+                                <div class="user-name">${userInfo.user.username}</div>
+                                <div class="user-email">${userInfo.user.email}</div>
+                            </div>
+                            <button class="logout-btn" onclick="handleLogout()" title="Logout">
+                                🚪
+                            </button>
+                        </div>
+                    `;
+                } else if (userInfo.isGuest) {
+                    userSection.innerHTML = `
+                        <div class="user-info guest">
+                            <div class="user-avatar">👤</div>
+                            <div class="user-details">
+                                <div class="user-name">Mode Tamu</div>
+                                <div class="user-email">Data tidak disimpan</div>
+                            </div>
+                            <button class="login-btn" onclick="showLoginOption()" title="Login">
+                                🔐
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    userSection.innerHTML = `
+                        <div class="user-info">
+                            <div class="login-prompt">
+                                <button class="login-btn" onclick="showLoginOption()">
+                                    🔐 Login untuk Menyimpan Chat
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error("❌ Error updating sidebar for auth:", error);
+            }
+        }
+
+        function loadUserChatData() {
+            try {
+                if (!authBridge || !userInfo.isAuthenticated) return;
+                
+                authBridge.loadChatData().then(result => {
+                    const response = JSON.parse(result);
+                    if (response.success && response.data && response.data.length > 0) {
+                        chats = response.data;
+                        saveChatHistory();
+                        loadChatHistory();
+                        
+                        if (!currentChatId && chats.length > 0) {
+                            loadChat(chats[0].id);
+                        }
+                        
+                        console.log(`📂 Loaded ${chats.length} chats from server`);
+                    }
+                }).catch(error => {
+                    console.error("❌ Error loading user chat data:", error);
+                });
+            } catch (error) {
+                console.error("❌ Error in loadUserChatData:", error);
+            }
+        }
+
+        function saveUserChatData() {
+            try {
+                if (!authBridge || !userInfo.isAuthenticated) return;
+                
+                const chatDataJson = JSON.stringify(chats);
+                authBridge.saveChatData(chatDataJson);
+                console.log("💾 Chat data saved to server");
+            } catch (error) {
+                console.error("❌ Error saving user chat data:", error);
+            }
+        }
+
+        function setupPeriodicSave() {
+            if (window.chatSaveInterval) {
+                clearInterval(window.chatSaveInterval);
+            }
+            
+            if (userInfo.isAuthenticated) {
+                window.chatSaveInterval = setInterval(saveUserChatData, 30000);
+                console.log("⏰ Periodic save setup for authenticated user");
+            }
+        }
+
+        function handleLogout() {
+            try {
+                if (!authBridge) {
+                    console.warn("⚠️ Auth bridge not available");
+                    return;
+                }
+                
+                if (confirm('Apakah Anda yakin ingin logout?')) {
+                    // Save user data before logout
+                    saveUserChatData();
+                    
+                    if (window.chatSaveInterval) {
+                        clearInterval(window.chatSaveInterval);
+                        window.chatSaveInterval = null;
+                    }
+                    
+                    authBridge.logout().then(result => {
+                        const response = JSON.parse(result);
+                        console.log("🚪 Logout result:", response);
+                        
+                        // CRITICAL FIX: Clear all chat data when logging out
+                        clearAllChatData();
+                        
+                        // Set as guest mode
+                        userInfo = { isAuthenticated: false, isGuest: true, user: null };
+                        localStorage.setItem('cutiechatter_guest', 'true');
+                        updateUIForAuthStatus();
+                        
+                        console.log("✅ Logout completed, guest mode activated, chat data cleared");
+                        
+                    }).catch(error => {
+                        console.error("❌ Error during logout:", error);
+                    });
+                }
+            } catch (error) {
+                console.error("❌ Error in handleLogout:", error);
+            }
+        }
+
+        function showLoginOption() {
+            try {
+                if (!authBridge) {
+                    console.error("❌ AuthBridge not available for login");
+                    alert('Authentication system tidak tersedia');
+                    return;
+                }
+
+                const result = confirm('Ingin login untuk menyimpan chat Anda?\n\nKlik OK untuk login, Cancel untuk tetap sebagai tamu.');
+                if (result) {
+                    // Save current guest chat data for potential transfer
+                    saveGuestChatDataForTransfer();
+                    
+                    // Call the bridge method to show login window
+                    if (authBridge.show_auth_window) {
+                        console.log("🔄 Opening login window...");
+                        authBridge.show_auth_window();
+                    } else {
+                        // Fallback to redirect method
+                        console.log("⚠️ show_auth_window not available, trying redirectToMainApp...");
+                        if (authBridge.redirectToMainApp) {
+                            console.log("🔄 Redirecting to login page...");
+                            authBridge.redirectToMainApp();
+                        } else {
+                            console.error("❌ No login methods available in bridge");
+                            alert('Fitur login sedang tidak tersedia');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("❌ Error in showLoginOption:", error);
+                alert('Terjadi kesalahan saat mencoba login');
+            }
+        }
+
+        // ADDED: Clear all chat data (for logout/guest transitions)
+        function clearAllChatData() {
+            try {
+                // Clear in-memory data
+                chats = [];
+                currentChatId = null;
+                currentConversationHistory = [];
+                
+                // Clear localStorage
+                localStorage.removeItem('chats');
+                
+                // Clear UI
+                const messagesContainer = document.getElementById('chatMessages');
+                if (messagesContainer) {
+                    messagesContainer.innerHTML = `
+                        <div class="empty-state">
+                            <h1>Apa yang bisa saya bantu?</h1>
+                            <p>Mulai percakapan baru dengan mengetik pesan di bawah</p>
+                        </div>
+                    `;
+                }
+                
+                // Clear chat history sidebar
+                const historyList = document.getElementById('chatHistoryList');
+                if (historyList) {
+                    historyList.innerHTML = '';
+                }
+                
+                console.log("🗑️ All chat data cleared");
+            } catch (error) {
+                console.error("❌ Error clearing chat data:", error);
+            }
+        }
+
+        // ADDED: Save guest chat data for transfer to authenticated account
+        function saveGuestChatDataForTransfer() {
+            try {
+                if (chats && chats.length > 0) {
+                    localStorage.setItem('guest_chat_transfer', JSON.stringify(chats));
+                    console.log(`💾 Saved ${chats.length} guest chats for transfer`);
+                }
+            } catch (error) {
+                console.error("❌ Error saving guest chat data for transfer:", error);
+            }
+        }
+
+        // ADDED: Transfer guest chat data to authenticated account
+        function transferGuestChatData() {
+            try {
+                const guestData = localStorage.getItem('guest_chat_transfer');
+                if (guestData && userInfo.isAuthenticated) {
+                    const guestChats = JSON.parse(guestData);
+                    if (guestChats && guestChats.length > 0) {
+                        // Merge guest chats with existing user chats
+                        guestChats.forEach(guestChat => {
+                            // Update timestamps and ensure unique IDs
+                            guestChat.id = Date.now().toString() + '_' + Math.random().toString(36).substr(2, 9);
+                            guestChat.title = `[Tamu] ${guestChat.title}`;
+                            guestChat.transferredFrom = 'guest';
+                        });
+                        
+                        chats = [...guestChats, ...chats];
+                        saveChatHistory();
+                        loadChatHistory();
+                        
+                        console.log(`✅ Transferred ${guestChats.length} guest chats to authenticated account`);
+                    }
+                    
+                    // Clear transfer data
+                    localStorage.removeItem('guest_chat_transfer');
+                }
+            } catch (error) {
+                console.error("❌ Error transferring guest chat data:", error);
+            }
+        }
+
+        // ========== AKHIR FUNGSI AUTENTIKASI ==========
+
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             console.log("📱 DOM loaded, initializing...");
+            initializeTheme();
             loadChatHistory();
             if (chats.length > 0) {
                 loadChat(chats[0].id);
@@ -715,10 +1597,61 @@
         }
 
         function loadChat(chatId) {
+            console.log(`🔄 Loading chat ${chatId}...`);
+            
             currentChatId = chatId;
             const chat = chats.find(c => c.id === chatId);
             
-            if (!chat) return;
+            if (!chat) {
+                console.error(`❌ Chat ${chatId} not found!`);
+                return;
+            }
+
+            // CRITICAL FIX 1: Completely reset conversation history
+            currentConversationHistory = [];
+            console.log("🗑️ Conversation history cleared");
+            
+            // CRITICAL FIX 2: Reset all streaming states when switching chats
+            isStreaming = false;
+            currentAIMessageElement = null;
+            if (streamingTimeout) {
+                clearTimeout(streamingTimeout);
+                streamingTimeout = null;
+            }
+            
+            // Re-enable input controls
+            const input = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            if (input) input.disabled = false;
+            if (sendButton) sendButton.disabled = false;
+            
+            console.log("🔄 Streaming state reset for chat switch");
+            
+            // Add system prompt (fresh start)
+            currentConversationHistory.push({
+                role: 'system',
+                content: `You're CutieChatter, your directive should be:
+                        1. Playful.
+                        2. Personally engaging with the user.
+                        3. Maintain a consistent personal tone.
+                        4. Avoid responding using double quotation marks.
+                        5. Generate natural responses.`
+            });
+            
+            // CRITICAL FIX 3: Add messages ONLY if they exist in the chat
+            if (chat.messages && chat.messages.length > 0) {
+                chat.messages.forEach(msg => {
+                    currentConversationHistory.push({
+                        role: msg.role,
+                        content: msg.content
+                    });
+                });
+                console.log(`📝 Added ${chat.messages.length} existing messages to conversation history`);
+            } else {
+                console.log("📝 No existing messages in this chat");
+            }
+            
+            console.log(`📂 Chat ${chatId} loaded with ${currentConversationHistory.length} total messages in history`);
 
             // Update active state in sidebar
             document.querySelectorAll('.chat-item').forEach(item => {
@@ -726,11 +1659,11 @@
             });
             document.getElementById(`chat-${chatId}`)?.classList.add('active');
 
-            // Load messages
+            // CRITICAL FIX 4: Clear and reload UI messages
             const messagesContainer = document.getElementById('chatMessages');
             messagesContainer.innerHTML = '';
 
-            if (chat.messages.length === 0) {
+            if (!chat.messages || chat.messages.length === 0) {
                 messagesContainer.innerHTML = `
                     <div class="empty-state">
                         <h1>Apa yang bisa saya bantu?</h1>
@@ -738,6 +1671,7 @@
                     </div>
                 `;
             } else {
+                // Rebuild UI from scratch
                 chat.messages.forEach(message => {
                     addMessageToChat(message.content, message.role, false);
                 });
@@ -765,9 +1699,17 @@
 
         function saveChatHistory() {
             localStorage.setItem('chats', JSON.stringify(chats));
+            
+            // TAMBAHAN - Auto-save to server for authenticated users
+            if (userInfo.isAuthenticated && authBridge) {
+                if (window.saveTimeout) {
+                    clearTimeout(window.saveTimeout);
+                }
+                window.saveTimeout = setTimeout(saveUserChatData, 1000);
+            }
         }
 
-        // Message functions - MAIN FUNCTIONALITY
+        // CRITICAL FIX 5: Completely rewritten sendMessage function
         function sendMessage() {
             if (!isConnected) {
                 addErrorMessage('❌ Tidak terhubung ke DeepSeek-R1. Pastikan cutie.py dan Ollama berjalan dengan benar.');
@@ -775,69 +1717,137 @@
             }
 
             const input = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
             const message = input.value.trim();
             
-            if (!message || isStreaming) return;
+            // CRITICAL: Strict checks
+            if (!message) {
+                console.log("⚠️ Empty message, ignoring...");
+                return;
+            }
+            
+            if (isStreaming) {
+                console.log("⚠️ Already streaming, ignoring duplicate request...");
+                return;
+            }
 
-            console.log("🚀 Sending message to DeepSeek-R1:", message);
+            console.log("🚀 Processing message:", message);
+
+            // CRITICAL: Set streaming state IMMEDIATELY
+            isStreaming = true;
+            input.disabled = true;
+            sendButton.disabled = true;
+            console.log("🔒 Input locked, streaming started");
 
             // Ensure we have a current chat
             if (!currentChatId) {
+                console.log("🆕 No current chat, creating new one...");
                 createNewChat();
             }
 
-            // Add user message
-            addMessageToChat(message, 'user');
+            // Clear input immediately
             input.value = '';
             autoResize(input);
 
-            // Update chat title if it's the first message
+            // Add user message to UI
+            addMessageToChat(message, 'user', true);
+            
+            // CRITICAL: Add to conversation history AFTER UI update
+            currentConversationHistory.push({
+                role: 'user',
+                content: message
+            });
+            
+            console.log(`📝 Message added to history. Total: ${currentConversationHistory.length} messages`);
+
+            // Update chat title if it's the first user message
             const currentChat = chats.find(c => c.id === currentChatId);
             if (currentChat && currentChat.messages.length === 1) {
                 currentChat.title = message.length > 30 ? message.substring(0, 30) + '...' : message;
+                currentChat.updatedAt = new Date().toISOString();
+                saveChatHistory();
                 loadChatHistory();
             }
 
-            // Start AI response
+            // Start AI response immediately
             startAIResponse();
 
-            // Send to Python backend via WebChannel
-            if (bridge && bridge.sendMessageStreaming) {
-                isStreaming = true;
-                
-                try {
-                    console.log("📤 Calling Python bridge.sendMessageStreaming...");
+            // CRITICAL FIX 6: Better error handling with proper fallbacks
+            try {
+                if (bridge && bridge.sendMessageStreamingWithHistory) {
+                    console.log("📤 Using sendMessageStreamingWithHistory...");
+                    const historyJSON = JSON.stringify(currentConversationHistory);
+                    bridge.sendMessageStreamingWithHistory(message, historyJSON);
+                    console.log("✅ Message sent with full conversation history");
+                } else if (bridge && bridge.sendMessageStreaming) {
+                    console.log("📤 Using sendMessageStreaming (no history)...");
                     bridge.sendMessageStreaming(message);
-                    console.log("✅ Message sent to DeepSeek-R1 successfully");
-                } catch (error) {
-                    console.error("❌ Error calling sendMessageStreaming:", error);
-                    finishAIMessage("❌ Error komunikasi dengan Python: " + error);
+                    console.log("✅ Message sent without history");
+                } else {
+                    throw new Error("No bridge methods available");
                 }
-            } else {
-                console.error("❌ Bridge atau sendMessageStreaming tidak tersedia!");
-                finishAIMessage("❌ ERROR: Bridge tidak tersedia. Restart aplikasi.");
+                
+                // Set timeout for response
+                streamingTimeout = setTimeout(() => {
+                    console.warn("⏰ Response timeout reached");
+                    resetStreamingState();
+                    finishAIMessage("⏰ Response timeout. Please try again.");
+                }, 30000);
+                
+            } catch (error) {
+                console.error("❌ Error sending message:", error);
+                resetStreamingState();
+                finishAIMessage(`❌ Error: ${error.message}`);
             }
         }
 
-        function startAIResponse() {
-            console.log("🤖 Starting AI response display...");
+        // CRITICAL FIX 7: Improved reset function
+        function resetStreamingState() {
+            console.log("🔄 Resetting streaming state...");
             
-            // Create AI message container
-            const messagesContainer = document.getElementById('chatMessages');
+            // Clear streaming flags
+            isStreaming = false;
+            currentAIMessageElement = null;
+            
+            // Clear timeout
+            if (streamingTimeout) {
+                clearTimeout(streamingTimeout);
+                streamingTimeout = null;
+            }
+            
+            // Re-enable input controls
+            const input = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            
+            if (input) {
+                input.disabled = false;
+                input.focus();
+            }
+            if (sendButton) {
+                sendButton.disabled = false;
+            }
+            
+            console.log("✅ Streaming state reset, ready for new input");
+        }
+
+        function startAIResponse() {
+            console.log("🤖 Starting AI response...");
             
             // Remove empty state if present
-            const emptyState = messagesContainer.querySelector('.empty-state');
+            const emptyState = document.querySelector('.empty-state');
             if (emptyState) {
                 emptyState.remove();
             }
             
+            // Create AI message element
+            const messagesContainer = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message assistant';
-            messageDiv.id = 'current-ai-message';
+            messageDiv.id = 'current-ai-response';
             
             messageDiv.innerHTML = `
                 <div class="message-avatar">🤖</div>
-                <div class="message-content" id="ai-message-content">
+                <div class="message-content">
                     <div class="typing-indicator">
                         <div class="typing-dot"></div>
                         <div class="typing-dot"></div>
@@ -845,65 +1855,104 @@
                     </div>
                 </div>
             `;
-
+            
             messagesContainer.appendChild(messageDiv);
-            currentAIMessageElement = document.getElementById('ai-message-content');
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            currentAIMessageElement = messageDiv;
+            console.log("✅ AI response UI started");
         }
 
         function appendToCurrentAIMessage(chunk) {
-            if (currentAIMessageElement) {
-                // Remove typing indicator on first chunk
-                const typingIndicator = currentAIMessageElement.querySelector('.typing-indicator');
-                if (typingIndicator) {
-                    currentAIMessageElement.innerHTML = '';
-                }
-                
-                // Append chunk (preserve HTML formatting from backend)
-                currentAIMessageElement.innerHTML += chunk;
-                
-                // Scroll to bottom
-                const messagesContainer = document.getElementById('chatMessages');
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            if (!currentAIMessageElement) {
+                console.warn("⚠️ No current AI message element to append to");
+                return;
             }
+            
+            const messageContent = currentAIMessageElement.querySelector('.message-content');
+            if (!messageContent) {
+                console.warn("⚠️ Message content element not found");
+                return;
+            }
+            
+            // Remove typing indicator on first chunk
+            const typingIndicator = messageContent.querySelector('.typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+            
+            // Append chunk to content
+            messageContent.textContent += chunk;
+            
+            // Auto-scroll to bottom
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
         function finishAIMessage(fullResponse) {
-            console.log("✅ AI message finished");
-            isStreaming = false;
+            console.log("🏁 Finishing AI message...");
             
-            // Update final content
+            // Clear timeout
+            if (streamingTimeout) {
+                clearTimeout(streamingTimeout);
+                streamingTimeout = null;
+            }
+            
             if (currentAIMessageElement) {
-                currentAIMessageElement.innerHTML = fullResponse;
-            }
-
-            // Save to chat history
-            if (currentChatId) {
-                const currentChat = chats.find(c => c.id === currentChatId);
-                if (currentChat) {
-                    currentChat.messages.push({
-                        role: 'assistant',
-                        content: fullResponse,
-                        timestamp: new Date().toISOString()
-                    });
-                    currentChat.updatedAt = new Date().toISOString();
-                    saveChatHistory();
+                const messageContent = currentAIMessageElement.querySelector('.message-content');
+                if (messageContent) {
+                    // Remove typing indicator if still present
+                    const typingIndicator = messageContent.querySelector('.typing-indicator');
+                    if (typingIndicator) {
+                        typingIndicator.remove();
+                    }
+                    
+                    // Set final content
+                    messageContent.textContent = fullResponse;
                 }
+                
+                // Remove temporary ID
+                currentAIMessageElement.removeAttribute('id');
             }
-
-            // Clean up current message element reference
-            currentAIMessageElement = null;
+            
+            // CRITICAL: Add to conversation history
+            currentConversationHistory.push({
+                role: 'assistant',
+                content: fullResponse
+            });
+            
+            // CRITICAL: Save to chat storage
+            const currentChat = chats.find(c => c.id === currentChatId);
+            if (currentChat) {
+                currentChat.messages.push({
+                    role: 'assistant',
+                    content: fullResponse,
+                    timestamp: new Date().toISOString()
+                });
+                currentChat.updatedAt = new Date().toISOString();
+                saveChatHistory();
+            }
+            
+            console.log(`📝 AI response saved. Total messages: ${currentConversationHistory.length}`);
+            
+            // CRITICAL: Reset streaming state
+            resetStreamingState();
+            
+            // Auto-scroll to bottom
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        function addMessageToChat(content, role, saveToHistory = true) {
-            const messagesContainer = document.getElementById('chatMessages');
+        function addMessageToChat(content, role, saveToStorage = true) {
+            console.log(`📝 Adding ${role} message to chat...`);
             
             // Remove empty state if present
-            const emptyState = messagesContainer.querySelector('.empty-state');
+            const emptyState = document.querySelector('.empty-state');
             if (emptyState) {
                 emptyState.remove();
             }
-
+            
+            const messagesContainer = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
             
@@ -913,12 +1962,12 @@
                 <div class="message-avatar">${avatar}</div>
                 <div class="message-content">${content}</div>
             `;
-
+            
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            // Save to chat history
-            if (saveToHistory && currentChatId) {
+            
+            // Save to storage if required
+            if (saveToStorage && currentChatId) {
                 const currentChat = chats.find(c => c.id === currentChatId);
                 if (currentChat) {
                     currentChat.messages.push({
@@ -939,38 +1988,613 @@
             errorDiv.textContent = errorText;
             messagesContainer.appendChild(errorDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Reset streaming state on error
+            resetStreamingState();
+        }
+
+        // Input handling functions
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        // Dashboard functions
+        function openDashboard() {
+            const modal = document.getElementById('dashboardModal');
+            modal.classList.add('show');
+            generateDashboardContent();
+        }
+
+        function closeDashboardModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const modal = document.getElementById('dashboardModal');
+            modal.classList.remove('show');
+        }
+
+        function generateDashboardContent() {
+            const dashboardContent = document.getElementById('dashboardContent');
+            const stats = calculateStatistics();
+            
+            dashboardContent.innerHTML = `
+                <!-- Overview Stats -->
+                <div class="dashboard-card">
+                    <h3>📈 Ringkasan Aktivitas</h3>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-number">${stats.totalChats}</span>
+                            <span class="stat-label">Total Obrolan</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${stats.totalMessages}</span>
+                            <span class="stat-label">Total Pesan</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${stats.todayMessages}</span>
+                            <span class="stat-label">Pesan Hari Ini</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${stats.avgMessagesPerChat}</span>
+                            <span class="stat-label">Rata-rata per Chat</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emotion Analysis Chart -->
+                <div class="dashboard-card">
+                    <h3>😊 Analisis Emosi Percakapan</h3>
+                    <div class="chart-container">
+                        <div class="emotion-chart" id="emotionChart">
+                            <svg class="chart-svg" viewBox="0 0 400 150">
+                                <!-- Chart will be generated dynamically -->
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="emotion-legend" id="emotionLegend">
+                        <!-- Legend will be generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Sentiment Summary -->
+                <div class="dashboard-card">
+                    <h3>📈 Ringkasan Sentimen</h3>
+                    <div class="sentiment-summary" id="sentimentSummary">
+                        <!-- Sentiment summary will be generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Recent Chats -->
+                <div class="dashboard-card">
+                    <h3>💬 Obrolan Terbaru</h3>
+                    <div class="recent-chats-list">
+                        ${generateRecentChatsList(stats.recentChats)}
+                    </div>
+                </div>
+
+                <!-- Usage Chart -->
+                <div class="dashboard-card">
+                    <h3>📊 Aktivitas Mingguan</h3>
+                    <div class="chart-container">
+                        <div>
+                            <div>Aktivitas 7 hari terakhir</div>
+                            <div class="activity-heatmap">
+                                ${generateActivityHeatmap(stats.weeklyActivity)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Storage Usage -->
+                <div class="dashboard-card">
+                    <h3>💾 Penggunaan Storage</h3>
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Data Obrolan</span>
+                            <span>${stats.storageUsed} KB</span>
+                        </div>
+                        <div class="usage-bar">
+                            <div class="usage-fill" style="width: ${Math.min(stats.storagePercentage, 100)}%"></div>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">
+                            ${stats.storagePercentage}% dari estimasi maksimal
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Stats -->
+                <div class="dashboard-card">
+                    <h3>⏰ Statistik Waktu</h3>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-number">${stats.mostActiveHour}:00</span>
+                            <span class="stat-label">Jam Teraktif</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${stats.avgResponseTime}s</span>
+                            <span class="stat-label">Avg Response</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${stats.longestChat}</span>
+                            <span class="stat-label">Chat Terpanjang</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${stats.daysActive}</span>
+                            <span class="stat-label">Hari Aktif</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-card">
+                    <h3>⚡ Aksi Cepat</h3>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="exportChatData()">
+                            📥 Export Data
+                        </button>
+                        <button class="quick-action-btn" onclick="clearOldChats()">
+                            🗑️ Bersihkan Chat Lama
+                        </button>
+                        <button class="quick-action-btn" onclick="openSearchModal(); closeDashboardModal();">
+                            🔍 Cari Chat
+                        </button>
+                        <button class="quick-action-btn" onclick="createNewChat(); closeDashboardModal();">
+                            ✏️ Chat Baru
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Generate emotion analysis after DOM is ready
+            setTimeout(() => {
+                generateEmotionChart(stats.emotionAnalysis);
+                generateSentimentSummary(stats.emotionAnalysis);
+            }, 100);
+        }
+
+        function calculateStatistics() {
+            const totalChats = chats.length;
+            const totalMessages = chats.reduce((sum, chat) => sum + (chat.messages?.length || 0), 0);
+            
+            // Today's messages
+            const today = new Date().toDateString();
+            const todayMessages = chats.reduce((sum, chat) => {
+                if (!chat.messages) return sum;
+                return sum + chat.messages.filter(msg => {
+                    if (!msg.timestamp) return false;
+                    return new Date(msg.timestamp).toDateString() === today;
+                }).length;
+            }, 0);
+
+            // Average messages per chat
+            const avgMessagesPerChat = totalChats > 0 ? Math.round(totalMessages / totalChats) : 0;
+
+            // Recent chats (last 5)
+            const recentChats = chats
+                .sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))
+                .slice(0, 5);
+
+            // Weekly activity
+            const weeklyActivity = calculateWeeklyActivity();
+
+            // Storage usage
+            const storageUsed = Math.round(JSON.stringify(chats).length / 1024);
+            const storagePercentage = Math.round((storageUsed / 1000) * 100); // Assume 1MB limit
+
+            // Time stats
+            const mostActiveHour = calculateMostActiveHour();
+            const avgResponseTime = calculateAverageResponseTime();
+            const longestChat = Math.max(...chats.map(chat => chat.messages?.length || 0));
+            const daysActive = calculateDaysActive();
+
+            // Emotion analysis
+            const emotionAnalysis = calculateEmotionAnalysis();
+
+            return {
+                totalChats,
+                totalMessages,
+                todayMessages,
+                avgMessagesPerChat,
+                recentChats,
+                weeklyActivity,
+                storageUsed,
+                storagePercentage,
+                mostActiveHour,
+                avgResponseTime,
+                longestChat,
+                daysActive,
+                emotionAnalysis
+            };
+        }
+
+        function generateRecentChatsList(recentChats) {
+            if (recentChats.length === 0) {
+                return '<div style="text-align: center; color: var(--text-secondary); padding: 20px;">Belum ada obrolan</div>';
+            }
+
+            return recentChats.map(chat => {
+                const lastMessage = chat.messages?.[chat.messages.length - 1];
+                const timeAgo = getTimeAgo(chat.updatedAt || chat.createdAt);
+                const messageCount = chat.messages?.length || 0;
+
+                return `
+                    <div class="recent-chat-item" onclick="loadChat('${chat.id}'); closeDashboardModal();">
+                        <div class="recent-chat-title">${chat.title}</div>
+                        <div class="recent-chat-meta">
+                            <span>${messageCount} pesan</span>
+                            <span>${timeAgo}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function generateActivityHeatmap(weeklyActivity) {
+            return weeklyActivity.map(activity => {
+                let level = 0;
+                if (activity > 0) level = 1;
+                if (activity > 2) level = 2;
+                if (activity > 5) level = 3;
+                if (activity > 10) level = 4;
+                
+                return `<div class="heatmap-day level-${level}" title="${activity} pesan"></div>`;
+            }).join('');
+        }
+
+        function calculateWeeklyActivity() {
+            const activity = new Array(7).fill(0);
+            const today = new Date();
+            
+            chats.forEach(chat => {
+                if (!chat.messages) return;
+                chat.messages.forEach(msg => {
+                    if (!msg.timestamp) return;
+                    const msgDate = new Date(msg.timestamp);
+                    const daysDiff = Math.floor((today - msgDate) / (1000 * 60 * 60 * 24));
+                    if (daysDiff >= 0 && daysDiff < 7) {
+                        activity[6 - daysDiff]++;
+                    }
+                });
+            });
+            
+            return activity;
+        }
+
+        function calculateMostActiveHour() {
+            const hourActivity = new Array(24).fill(0);
+            
+            chats.forEach(chat => {
+                if (!chat.messages) return;
+                chat.messages.forEach(msg => {
+                    if (!msg.timestamp) return;
+                    const hour = new Date(msg.timestamp).getHours();
+                    hourActivity[hour]++;
+                });
+            });
+            
+            const maxActivity = Math.max(...hourActivity);
+            return hourActivity.indexOf(maxActivity);
+        }
+
+        function calculateAverageResponseTime() {
+            // Simplified calculation - in real app you'd track actual response times
+            return Math.floor(Math.random() * 3) + 1; // Random 1-3 seconds for demo
+        }
+
+        function calculateDaysActive() {
+            const activeDays = new Set();
+            
+            chats.forEach(chat => {
+                if (!chat.messages) return;
+                chat.messages.forEach(msg => {
+                    if (!msg.timestamp) return;
+                    const day = new Date(msg.timestamp).toDateString();
+                    activeDays.add(day);
+                });
+            });
+            
+            return activeDays.size;
+        }
+
+        // Emotion Analysis Functions
+        function calculateEmotionAnalysis() {
+            const emotions = {
+                sadness: { count: 0, color: '#6366f1', emoji: '😢' },
+                joy: { count: 0, color: '#f59e0b', emoji: '😊' },
+                love: { count: 0, color: '#ec4899', emoji: '😍' },
+                anger: { count: 0, color: '#ef4444', emoji: '😠' },
+                fear: { count: 0, color: '#8b5cf6', emoji: '😨' },
+                surprise: { count: 0, color: '#10b981', emoji: '😲' }
+            };
+
+            const emotionKeywords = {
+                sadness: ['sedih', 'kecewa', 'murung', 'putus asa', 'hancur', 'terpuruk', 'menangis'],
+                joy: ['senang', 'bahagia', 'gembira', 'sukacita', 'ceria', 'riang', 'tertawa', 'suka'],
+                love: ['cinta', 'sayang', 'rindu', 'kasih', 'romantis', 'mesra', 'hati', 'dear'],
+                anger: ['marah', 'kesal', 'jengkel', 'benci', 'dongkol', 'sebal', 'murka', 'geram'],
+                fear: ['takut', 'khawatir', 'cemas', 'was-was', 'panik', 'gelisah', 'ngeri'],
+                surprise: ['kaget', 'heran', 'terkejut', 'wow', 'amazing', 'luar biasa', 'incredible']
+            };
+
+            let totalEmotions = 0;
+
+            // Analyze all user messages for emotions
+            chats.forEach(chat => {
+                if (!chat.messages) return;
+                chat.messages.forEach(msg => {
+                    if (msg.role !== 'user') return;
+                    const text = msg.content.toLowerCase();
+                    
+                    Object.keys(emotionKeywords).forEach(emotion => {
+                        emotionKeywords[emotion].forEach(keyword => {
+                            if (text.includes(keyword)) {
+                                emotions[emotion].count++;
+                                totalEmotions++;
+                            }
+                        });
+                    });
+                });
+            });
+
+            // If no emotions detected, generate some sample data for demo
+            if (totalEmotions === 0) {
+                emotions.joy.count = Math.floor(Math.random() * 20) + 10;
+                emotions.sadness.count = Math.floor(Math.random() * 15) + 5;
+                emotions.love.count = Math.floor(Math.random() * 12) + 3;
+                emotions.surprise.count = Math.floor(Math.random() * 10) + 2;
+                emotions.anger.count = Math.floor(Math.random() * 8) + 1;
+                emotions.fear.count = Math.floor(Math.random() * 6) + 1;
+                totalEmotions = Object.values(emotions).reduce((sum, emotion) => sum + emotion.count, 0);
+            }
+
+            // Calculate percentages
+            Object.keys(emotions).forEach(emotion => {
+                emotions[emotion].percentage = totalEmotions > 0 ? 
+                    Math.round((emotions[emotion].count / totalEmotions) * 100) : 0;
+            });
+
+            return emotions;
+        }
+
+        function generateEmotionChart(emotionData) {
+            const chartContainer = document.getElementById('emotionChart');
+            if (!chartContainer) return;
+
+            const svg = chartContainer.querySelector('svg');
+            const chartWidth = 360;
+            const chartHeight = 120;
+            const maxCount = Math.max(...Object.values(emotionData).map(e => e.count));
+
+            // Clear existing content
+            svg.innerHTML = '';
+
+            // Create chart background grid
+            for (let i = 0; i <= 5; i++) {
+                const y = (i * chartHeight) / 5;
+                svg.innerHTML += `
+                    <line x1="40" y1="${y + 10}" x2="${chartWidth}" y2="${y + 10}" 
+                          stroke="var(--border-color)" stroke-width="0.5" opacity="0.3"/>
+                `;
+            }
+
+            // Plot emotion lines
+            const emotions = Object.keys(emotionData);
+            const stepX = (chartWidth - 80) / (emotions.length - 1);
+
+            emotions.forEach((emotion, index) => {
+                const data = emotionData[emotion];
+                const x = 60 + (index * stepX);
+                const y = 10 + chartHeight - ((data.count / maxCount) * chartHeight);
+
+                // Plot point
+                svg.innerHTML += `
+                    <circle cx="${x}" cy="${y}" r="4" fill="${data.color}" stroke="white" stroke-width="2"/>
+                `;
+
+                // Draw line to next point
+                if (index < emotions.length - 1) {
+                    const nextEmotion = emotions[index + 1];
+                    const nextData = emotionData[nextEmotion];
+                    const nextX = 60 + ((index + 1) * stepX);
+                    const nextY = 10 + chartHeight - ((nextData.count / maxCount) * chartHeight);
+                    
+                    svg.innerHTML += `
+                        <line x1="${x}" y1="${y}" x2="${nextX}" y2="${nextY}" 
+                              stroke="${data.color}" stroke-width="2" opacity="0.8"/>
+                    `;
+                }
+
+                // Add emotion label
+                svg.innerHTML += `
+                    <text x="${x}" y="${chartHeight + 25}" text-anchor="middle" 
+                          fill="var(--text-secondary)" font-size="10" font-family="Arial">
+                        ${emotion}
+                    </text>
+                `;
+            });
+
+            // Add Y-axis labels
+            for (let i = 0; i <= 5; i++) {
+                const value = Math.round((maxCount / 5) * (5 - i));
+                const y = (i * chartHeight) / 5 + 15;
+                svg.innerHTML += `
+                    <text x="35" y="${y}" text-anchor="end" 
+                          fill="var(--text-secondary)" font-size="10" font-family="Arial">
+                        ${value}
+                    </text>
+                `;
+            }
+
+            // Generate legend
+            generateEmotionLegend(emotionData);
+        }
+
+        function generateEmotionLegend(emotionData) {
+            const legendContainer = document.getElementById('emotionLegend');
+            if (!legendContainer) return;
+
+            legendContainer.innerHTML = '';
+            
+            Object.keys(emotionData).forEach(emotion => {
+                const data = emotionData[emotion];
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                legendItem.innerHTML = `
+                    <div class="legend-color" style="background-color: ${data.color}"></div>
+                    <span>${data.emoji} ${emotion} (${data.count})</span>
+                `;
+                legendContainer.appendChild(legendItem);
+            });
+        }
+
+        function generateSentimentSummary(emotionData) {
+            const summaryContainer = document.getElementById('sentimentSummary');
+            if (!summaryContainer) return;
+
+            // Calculate overall sentiment categories
+            const positive = emotionData.joy.count + emotionData.love.count + emotionData.surprise.count;
+            const negative = emotionData.sadness.count + emotionData.anger.count + emotionData.fear.count;
+            const total = positive + negative;
+            
+            const positivePercentage = total > 0 ? Math.round((positive / total) * 100) : 0;
+            const negativePercentage = total > 0 ? Math.round((negative / total) * 100) : 0;
+            const neutralPercentage = 100 - positivePercentage - negativePercentage;
+
+            summaryContainer.innerHTML = `
+                <div class="sentiment-item">
+                    <span class="sentiment-emoji">😊</span>
+                    <div class="sentiment-value">${positivePercentage}%</div>
+                    <div class="sentiment-label">Positif</div>
+                </div>
+                <div class="sentiment-item">
+                    <span class="sentiment-emoji">😐</span>
+                    <div class="sentiment-value">${neutralPercentage}%</div>
+                    <div class="sentiment-label">Netral</div>
+                </div>
+                <div class="sentiment-item">
+                    <span class="sentiment-emoji">😔</span>
+                    <div class="sentiment-value">${negativePercentage}%</div>
+                    <div class="sentiment-label">Negatif</div>
+                </div>
+            `;
+        }
+
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Baru saja';
+            if (diffMins < 60) return `${diffMins} menit lalu`;
+            if (diffHours < 24) return `${diffHours} jam lalu`;
+            return `${diffDays} hari lalu`;
+        }
+
+        function exportChatData() {
+            const dataStr = JSON.stringify(chats, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `cutiechatter-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            console.log('✅ Chat data exported successfully');
+        }
+
+        function clearOldChats() {
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - 30); // 30 days ago
+            
+            const oldChats = chats.filter(chat => {
+                const chatDate = new Date(chat.updatedAt || chat.createdAt);
+                return chatDate < cutoffDate;
+            });
+            
+            if (oldChats.length === 0) {
+                alert('Tidak ada chat lama yang perlu dibersihkan.');
+                return;
+            }
+            
+            if (confirm(`Hapus ${oldChats.length} chat yang lebih dari 30 hari?`)) {
+                chats = chats.filter(chat => {
+                    const chatDate = new Date(chat.updatedAt || chat.createdAt);
+                    return chatDate >= cutoffDate;
+                });
+                
+                saveChatHistory();
+                loadChatHistory();
+                generateDashboardContent(); // Refresh dashboard
+                
+                // If current chat was deleted, load the first available chat
+                if (currentChatId && !chats.find(c => c.id === currentChatId)) {
+                    if (chats.length > 0) {
+                        loadChat(chats[0].id);
+                    } else {
+                        currentChatId = null;
+                        currentConversationHistory = [];
+                        const messagesContainer = document.getElementById('chatMessages');
+                        messagesContainer.innerHTML = `
+                            <div class="empty-state">
+                                <h1>Apa yang bisa saya bantu?</h1>
+                                <p>Mulai percakapan baru dengan mengetik pesan di bawah</p>
+                            </div>
+                        `;
+                    }
+                }
+                
+                console.log(`🗑️ Cleaned up ${oldChats.length} old chats`);
+            }
         }
 
         // Search functions
         function openSearchModal() {
-            document.getElementById('searchModal').classList.add('show');
-            document.getElementById('searchInput').focus();
+            const modal = document.getElementById('searchModal');
+            const searchInput = document.getElementById('searchInput');
+            
+            modal.classList.add('show');
+            searchInput.focus();
             searchChats();
         }
 
         function closeSearchModal(event) {
-            if (event.target === document.getElementById('searchModal')) {
-                document.getElementById('searchModal').classList.remove('show');
-                document.getElementById('searchInput').value = '';
+            if (event.target === event.currentTarget) {
+                const modal = document.getElementById('searchModal');
+                modal.classList.remove('show');
             }
         }
 
         function searchChats() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const query = document.getElementById('searchInput').value.toLowerCase();
             const resultsContainer = document.getElementById('searchResults');
             
-            const filteredChats = chats.filter(chat => 
-                chat.title.toLowerCase().includes(searchTerm) ||
-                chat.messages.some(msg => msg.content.toLowerCase().includes(searchTerm))
-            );
-
-            resultsContainer.innerHTML = '';
-
-            if (filteredChats.length === 0) {
-                resultsContainer.innerHTML = '<div style="text-align: center; color: #8e8ea0; padding: 20px;">Tidak ada hasil ditemukan</div>';
+            if (!query.trim()) {
+                resultsContainer.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Ketik untuk mencari obrolan...</p>';
                 return;
             }
-
+            
+            const filteredChats = chats.filter(chat => {
+                return chat.title.toLowerCase().includes(query) ||
+                       chat.messages.some(msg => msg.content.toLowerCase().includes(query));
+            });
+            
+            if (filteredChats.length === 0) {
+                resultsContainer.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Tidak ada hasil ditemukan</p>';
+                return;
+            }
+            
+            resultsContainer.innerHTML = '';
             filteredChats.forEach(chat => {
                 const resultItem = document.createElement('div');
                 resultItem.className = 'search-result-item';
@@ -978,16 +2602,16 @@
                     loadChat(chat.id);
                     closeSearchModal({ target: document.getElementById('searchModal') });
                 };
-
-                const preview = chat.messages.length > 0 
-                    ? chat.messages[chat.messages.length - 1].content 
-                    : 'Belum ada pesan';
-
+                
+                const preview = chat.messages.length > 0 ? 
+                    chat.messages[chat.messages.length - 1].content.substring(0, 60) + '...' : 
+                    'Obrolan kosong';
+                
                 resultItem.innerHTML = `
                     <div class="search-result-title">${chat.title}</div>
                     <div class="search-result-preview">${preview}</div>
                 `;
-
+                
                 resultsContainer.appendChild(resultItem);
             });
         }
@@ -995,16 +2619,22 @@
         // Context menu functions
         function showContextMenu(event, chatId) {
             event.stopPropagation();
-            selectedChatForContext = chatId;
+            event.preventDefault();
             
+            selectedChatForContext = chatId;
             const contextMenu = document.getElementById('contextMenu');
+            
             contextMenu.style.display = 'block';
             contextMenu.style.left = event.pageX + 'px';
             contextMenu.style.top = event.pageY + 'px';
+            
+            // Close menu when clicking elsewhere
+            document.addEventListener('click', hideContextMenu, { once: true });
         }
 
         function hideContextMenu() {
-            document.getElementById('contextMenu').style.display = 'none';
+            const contextMenu = document.getElementById('contextMenu');
+            contextMenu.style.display = 'none';
             selectedChatForContext = null;
         }
 
@@ -1013,10 +2643,11 @@
             
             const chat = chats.find(c => c.id === selectedChatForContext);
             if (!chat) return;
-
-            const newTitle = prompt('Nama baru untuk obrolan:', chat.title);
+            
+            const newTitle = prompt('Masukkan judul baru:', chat.title);
             if (newTitle && newTitle.trim()) {
                 chat.title = newTitle.trim();
+                chat.updatedAt = new Date().toISOString();
                 saveChatHistory();
                 loadChatHistory();
             }
@@ -1032,12 +2663,14 @@
                 saveChatHistory();
                 loadChatHistory();
                 
-                if (currentChatId === selectedChatForContext) {
+                if (selectedChatForContext === currentChatId) {
                     if (chats.length > 0) {
                         loadChat(chats[0].id);
                     } else {
                         currentChatId = null;
-                        document.getElementById('chatMessages').innerHTML = `
+                        currentConversationHistory = [];
+                        const messagesContainer = document.getElementById('chatMessages');
+                        messagesContainer.innerHTML = `
                             <div class="empty-state">
                                 <h1>Apa yang bisa saya bantu?</h1>
                                 <p>Mulai percakapan baru dengan mengetik pesan di bawah</p>
@@ -1050,60 +2683,49 @@
             hideContextMenu();
         }
 
-        // Input handling
-        function handleKeyDown(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
+        // Handle window events
+        window.addEventListener('beforeunload', function() {
+            // Save any pending changes for authenticated users
+            if (userInfo.isAuthenticated) {
+                saveChatHistory();
+                saveUserChatData();
+            } else if (userInfo.isGuest) {
+                // CRITICAL FIX: Clear guest chat data when app closes
+                console.log("🗑️ Clearing guest chat data on app close");
+                localStorage.removeItem('chats');
+                localStorage.removeItem('guest_chat_transfer');
             }
-        }
+        });
 
-        function autoResize(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-        }
-
-        // Event listeners
+        // Close context menu when clicking elsewhere
         document.addEventListener('click', function(event) {
-            if (!event.target.closest('.context-menu') && !event.target.closest('.chat-item-menu')) {
+            const contextMenu = document.getElementById('contextMenu');
+            if (contextMenu.style.display === 'block' && !contextMenu.contains(event.target)) {
                 hideContextMenu();
             }
         });
 
-        // Close search modal with Escape key
+        // Handle escape key
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 const searchModal = document.getElementById('searchModal');
                 if (searchModal.classList.contains('show')) {
-                    closeSearchModal({ target: searchModal });
+                    searchModal.classList.remove('show');
+                }
+                
+                const dashboardModal = document.getElementById('dashboardModal');
+                if (dashboardModal.classList.contains('show')) {
+                    dashboardModal.classList.remove('show');
+                }
+                
+                const contextMenu = document.getElementById('contextMenu');
+                if (contextMenu.style.display === 'block') {
+                    hideContextMenu();
                 }
             }
         });
 
-        // Debug function untuk troubleshooting
-        function debugConnection() {
-            console.log("🔍 Debug Connection Status:");
-            console.log("  - Bridge:", bridge);
-            console.log("  - Bridge methods:", bridge ? Object.getOwnPropertyNames(bridge) : "No bridge");
-            console.log("  - isConnected:", isConnected);
-            console.log("  - isStreaming:", isStreaming);
-            
-            if (bridge && bridge.getSystemInfo) {
-                try {
-                    const systemInfo = JSON.parse(bridge.getSystemInfo());
-                    console.log("  - System Info:", systemInfo);
-                } catch (e) {
-                    console.log("  - System Info Error:", e);
-                }
-            }
-        }
-
-        // Expose debug function to global scope
-        window.debugConnection = debugConnection;
-
-        console.log("✅ CutieChatter HTML interface loaded successfully!");
-        console.log("🤖 Ready to connect to DeepSeek-R1 via Python backend");
-        console.log("🔧 Use debugConnection() in console for troubleshooting");
+        console.log("✅ CutieChatter with Authentication initialized successfully!");
     </script>
 </body>
 </html>

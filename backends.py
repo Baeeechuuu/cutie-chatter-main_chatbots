@@ -15,17 +15,12 @@ from PyQt6.QtCore import (
     QObject,
     QMetaObject,
     pyqtSignal,
-    QUrl
-)
-from PyQt6.QtCore import (
-    QObject,
-    pyqtSignal
+    QUrl,
+    QThread
 )
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtGui import QIcon
-from ocr.docreader import (
-    TextExtractor
-)
+from ocr.docreader import TextExtractor
 from transformers import TextIteratorStreamer
 import multiprocessing, ollama, re, sys, os, subprocess, random, torch
 import torch.nn.functional as F
@@ -44,11 +39,8 @@ except ImportError:
     TTS_AVAILABLE = False
 
 '''
-
     Chat Widget with TTS Support
-
 '''
-
 
 class ChatWidget(QWidget):
     def __init__(self):
@@ -212,13 +204,8 @@ class ChatWidget(QWidget):
         self.animation.start()
 
 '''
-
-
-    Text Cleaner Class
-
-
+    Text Cleaner Class - FIXED VERSION
 '''
-
 
 class TextCleaner():
     def __init__(self, text):
@@ -240,30 +227,72 @@ class TextCleaner():
         return text
     
     def response_only(self, text):
-        text = re.sub(r'.*?</think>', '', text, flags=re.DOTALL)
-        text = re.sub(r'<\s*/\s*div\s*>', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'<\s*/\s*br\s*>', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'<\s*/\s*response\s*>', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'---', '', text)
-        text = re.sub(r'<\s*think\s*>', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'<\s*/\s*think\s*>', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'<\s*/?\s*th?i?n?k?\s*/?>', '', text, flags=re.IGNORECASE)
-        return text
+        """Extract only the response content, removing thinking sections - FIXED FOR DEEPSEEK"""
+        if not text:
+            return text
+        
+        # DeepSeek-R1 specific: Find the actual response after thinking
+        # Look for common patterns that indicate end of thinking
+        patterns = [
+            r'</think>\s*',
+            r'<think>.*?</think>',  # Remove think blocks
+            r'Alright,.*?\n\n',
+            r'I should.*?\n\n',
+            r'Let me.*?\n\n',
+            r'Hmm.*?\n\n',
+            r'Okay.*?\n\n',
+            r'I want to.*?\n\n',
+            r'I need to.*?\n\n',
+            r'Actually.*?\n\n',
+        ]
+        
+        cleaned_text = text
+        
+        # First, try to find </think> tag and get everything after it
+        think_end = cleaned_text.find('</think>')
+        if think_end != -1:
+            cleaned_text = cleaned_text[think_end + 8:].strip()
+            return cleaned_text
+        
+        # If no </think>, try to remove thinking patterns
+        for pattern in patterns:
+            cleaned_text = re.sub(pattern, '', cleaned_text, flags=re.IGNORECASE | re.DOTALL)
+        
+        # If text still looks like thinking, try to extract the last meaningful sentence
+        if any(keyword in cleaned_text.lower()[:50] for keyword in ['let me', 'i should', 'hmm', 'alright', 'actually']):
+            sentences = cleaned_text.split('. ')
+            # Find the last sentence that doesn't look like thinking
+            for i in range(len(sentences) - 1, -1, -1):
+                sentence = sentences[i].strip()
+                if sentence and not any(keyword in sentence.lower() for keyword in ['let me', 'i should', 'hmm']):
+                    cleaned_text = sentence
+                    if not cleaned_text.endswith('.'):
+                        cleaned_text += '.'
+                    break
+        
+        # Final cleanup
+        cleaned_text = re.sub(r'<[^>]+>', '', cleaned_text)  # Remove any HTML tags
+        cleaned_text = re.sub(r'\s+', ' ', cleaned_text)  # Normalize whitespace
+        cleaned_text = cleaned_text.strip()
+        
+        # If we end up with very short text, it might be an error
+        if len(cleaned_text) < 10 and len(text) > 100:
+            # Return a simple greeting as fallback
+            return "Halo! Ada yang bisa saya bantu?"
+        
+        return cleaned_text
 
     def process_content(self, text):
+        """Process content for display"""
         if not text:
             return text
         processed = self.text_to_be_cleaned.replace('\n', '<br>')
         processed = self.replace_italic_text(processed)
         processed = self.replace_think_tags(processed)
         return processed
-    
+
 '''
-
-
-    Ollama Worker For direct conversation.
-
-
+    Ollama Worker For direct conversation - FINAL FIXED VERSION
 '''
 
 class OllamaWorker(QObject):
@@ -274,52 +303,127 @@ class OllamaWorker(QObject):
         super().__init__()
         self.user_message = user_message
         self.conversation_history = conversation_history.copy()
-        self.num_threads = multiprocessing.cpu_count() / 2
+        self.num_threads = max(1, multiprocessing.cpu_count() // 2)
         self.model_name = model_name
 
     def run(self):
         try:
+            print(f"🤖 OllamaWorker running: {self.model_name}")
+            print(f"📝 Conversation history length: {len(self.conversation_history)}")
+            
+            # Test connection first
+            try:
+                ollama.list()
+            except Exception as e:
+                error_msg = f"❌ Ollama tidak bisa diakses: {str(e)}"
+                print(error_msg)
+                self.chunk_received.emit(error_msg)
+                self.finished.emit(error_msg)
+                return
+            
+            # Check if this is DeepSeek model
+            is_deepseek = 'deepseek' in self.model_name.lower()
+            
+            # Start streaming with appropriate options
             stream = ollama.chat(
                 model=self.model_name,
                 messages=self.conversation_history,
                 stream=True,
-                options = {
+                options={
                     "num_thread": self.num_threads,
-                    "temperature": 1.2,
-                    "top_n": 50,
-                    "top_k": 1.4,
-                    "f16_kv": True,
-                    "num_ctx": 1024,
-                    "num_batch": 32,
-                    "num_prediction": 12
+                    "temperature": 0.7 if is_deepseek else 1.1,
+                    "top_k": 40,
+                    "top_p": 0.9,
+                    "num_ctx": 2048,
+                    "num_batch": 512,
+                    "repeat_penalty": 1.1,
+                    "stop": ["</think>", "\nHuman:", "\nUser:"] if is_deepseek else []
                 }
             )
+            
             full_content = ''
+            received_chunks = 0
+            buffer = ''
+            response_started = False
+            
+            print("🚀 Starting streaming...")
+            
             for chunk in stream:
-                content = chunk['message']['content']
-                full_content += content
-                string_processor = TextCleaner(content)
-                processed_content = string_processor.process_content(string_processor)
-                self.chunk_received.emit(processed_content)
+                try:
+                    content = chunk.get('message', {}).get('content', '')
+                    
+                    if content:
+                        full_content += content
+                        received_chunks += 1
+                        
+                        if is_deepseek:
+                            buffer += content
+                            
+                            # Check if we should start showing response
+                            if not response_started:
+                                if '</think>' in buffer or len(buffer) > 1000:
+                                    # Extract actual response
+                                    text_cleaner = TextCleaner(buffer)
+                                    actual_response = text_cleaner.response_only(buffer)
+                                    
+                                    if actual_response and len(actual_response) > 10:
+                                        response_started = True
+                                        self.chunk_received.emit(actual_response)
+                                        buffer = ''  # Clear buffer
+                            else:
+                                # We're in the response part, emit directly
+                                self.chunk_received.emit(content)
+                        else:
+                            # Non-DeepSeek models - process normally
+                            try:
+                                processor = TextCleaner(content)
+                                processed = processor.process_content(content)
+                                self.chunk_received.emit(processed)
+                            except:
+                                self.chunk_received.emit(content)
+                        
+                        # Log progress every 10 chunks
+                        if received_chunks % 10 == 0:
+                            print(f"📥 Received {received_chunks} chunks...")
+                    
+                    # Check if done
+                    if chunk.get('done', False):
+                        print("✅ Stream completed")
+                        break
+                        
+                except Exception as chunk_error:
+                    print(f"⚠️ Chunk error: {chunk_error}")
+                    continue
+            
+            print(f"🏁 Total: {received_chunks} chunks, {len(full_content)} chars")
+            
+            # Final processing for DeepSeek
+            if is_deepseek:
+                text_cleaner = TextCleaner(full_content)
+                final_response = text_cleaner.response_only(full_content)
                 
-            naked = string_processor.response_only(full_content)
-
-            print(naked)
-            self.finished.emit(full_content)
+                # If we never started response, emit the cleaned version now
+                if not response_started and final_response:
+                    self.chunk_received.emit(final_response)
+            else:
+                final_response = full_content
+            
+            # Emit the complete response
+            if final_response and final_response.strip():
+                self.finished.emit(final_response)
+            else:
+                self.finished.emit("Halo! Ada yang bisa saya bantu?")
 
         except Exception as e:
-            print(f"Error: {e}")
-            error_message = f"There seems to be a miscalculation.{e}"
-            self.chunk_received.emit(error_message)
-            self.finished.emit(error_message)
-
+            error_msg = f"❌ Error: {str(e)}"
+            print(f"❌ OllamaWorker error: {e}")
+            import traceback
+            traceback.print_exc()
+            self.chunk_received.emit(error_msg)
+            self.finished.emit(error_msg)
 
 '''
-
-
-    OCR Worker for Document Extraction : Cons : Multilingual BIAS
-
-
+    OCR Worker for Document Extraction
 '''
 
 class OllamaOCRWorker(QObject):
@@ -399,15 +503,10 @@ class OllamaOCRWorker(QObject):
             self.chunk_received.emit(f"Error processing document: {str(e)}")
             self.finished.emit("")
 
-
-
 '''
-
-
     QWEN WORKER [Research]
-
-
 '''
+
 class QwenWorker(QObject):
     chunk_received = pyqtSignal(str)
     finished = pyqtSignal(str)
@@ -663,246 +762,3 @@ class QwenWorker(QObject):
         text = emoji_pattern.sub(r'', text)
         
         return text
-
-
-
-'''
-
-class QwenWorker(QObject):
-    chunk_received = pyqtSignal(str)
-    finished = pyqtSignal(str)
-
-    def __init__(self, model, tokenizer, user_message, conversation_history, max_new_tokens=64, context_length=1024, emotion_vectors=None):
-        super().__init__()
-
-        self.max_new_tokens = max_new_tokens
-        self.context_length = context_length
-        self.conversation_history = conversation_history.copy()
-        self.user_message = user_message
-        self.tokenizer = tokenizer
-        self.model = model
-        self.model.config.output_attentions = True
-        self.device = self.model.device
-        self.injection_vectors = emotion_vectors
-        self.response_started = False
-        self.hook_handles = []
-
-        # Precompute bias_embedding if emotion_vectors are provided
-        self.bias_embedding = None
-        if self.injection_vectors is not None:
-            self._precompute_bias_embedding()
-
-    def _precompute_bias_embedding(self):
-        try:
-            # Duplicate each emotion vector 4 times for amplification
-            amplified_injection_vectors = [vec for vec in self.injection_vectors for _ in range(48)]
-            
-            # Batch process all emotion vectors at once
-            batch_inputs = self.tokenizer(
-                amplified_injection_vectors,  # Use duplicated vectors
-                return_tensors="pt", 
-                padding=True, 
-                truncation=True
-            )
-            input_ids = batch_inputs.input_ids.to(self.device)
-            
-            with torch.no_grad():
-                outputs = self.model.base_model(input_ids=input_ids)
-                embeddings = outputs.last_hidden_state.mean(dim=1)
-                self.bias_embedding = torch.max(embeddings, dim=0)[0]
-                print(self.bias_embedding)
-                self.bias_embedding = F.normalize(self.bias_embedding, p=2, dim=-1)
-
-        except Exception as e:
-            print(f"Error precomputing bias_embedding: {e}")
-            self.bias_embedding = None
-
-    def run(self, bias=3.5, hs_scaling=3.5):
-        try:
-            return self.generate_response(bias, hs_scaling)
-        except Exception as e:
-            print(f"Error in run: {e}")
-            self.finished.emit("")
-            return ""
-            
-    def generate_response(self, bias, hs_scaling):
-        self.inputs = self.tokenizer(
-            self._format_conversation(self.conversation_history),
-            return_tensors="pt",
-            padding=True,
-            truncation=True,
-            max_length=self.context_length,
-            return_attention_mask=True
-        )
-
-        input_ids = self.inputs.input_ids.to(self.device)
-        attention_mask = self.inputs.attention_mask.to(self.device)
-
-        if self.injection_vectors is not None and self.bias_embedding is not None:
-            self._setup_emotion_hooks(bias, hs_scaling)
-
-        try:
-            streamer = TextIteratorStreamer(self.tokenizer)
-            
-            generation_kwargs = {
-                'input_ids': input_ids,
-                'attention_mask': attention_mask,
-                'max_new_tokens': self.max_new_tokens,
-                'num_return_sequences': 1,
-                'pad_token_id': self.tokenizer.pad_token_id,
-                'do_sample': True,
-                'temperature': 1.0,
-                'no_repeat_ngram_size': 5,
-                'repetition_penalty': 1.1,
-                'streamer': streamer,
-                'top_k': 10,
-                'top_p': 0.15,
-                'early_stopping': True,
-                'min_length': 1,
-                'forced_bos_token_id': self.tokenizer.bos_token_id,
-                'forced_eos_token_id': self.tokenizer.eos_token_id,
-                'output_attentions': True
-            }
-
-            # Use a cached regular expression for better performance
-            assistant_pattern = re.compile(r'<\|assistant\|>\n')
-            
-            thread = Thread(target=self.model.generate, kwargs=generation_kwargs)
-            thread.start()
-
-            full_content = []
-            for new_text in streamer:
-                content = new_text.get('content', '') if isinstance(new_text, dict) else new_text
-
-                if not self.response_started:
-                    match = assistant_pattern.search(content)
-                    if match:
-                        content = content[match.end():]
-                        self.response_started = True
-                    else:
-                        continue
-
-                if content:   
-                    full_content.append(content)
-                    # Use _clean_response instead of direct regex substitution
-                    cleaned_content = self._clean_response(content)
-                    if cleaned_content:
-                        self.chunk_received.emit(cleaned_content)
-
-            self._cleanup_hooks()
-                
-            # Use _clean_response for final cleanup
-            cleaned_full_content = self._clean_response(''.join(full_content))
-            self.finished.emit(cleaned_full_content)
-            return cleaned_full_content
-
-        except Exception as e:
-            print(f"Error in generate_response: {e}")
-            self._cleanup_hooks()
-            self.finished.emit("")
-            return ""
-
-    def _setup_emotion_hooks(self, bias, hs_scaling):
-        """Set up emotion injection hooks with memoized bias embedding"""
-        try:
-            # Cache the bias embedding at correct precision to avoid repeated conversions
-            bias_embedding_4bit = self.bias_embedding.to(dtype=torch.float16)
-            bias_embedding_4bit = F.normalize(bias_embedding_4bit, p=2, dim=-1)
-
-  
- 
-            @torch.no_grad()
-            def attention_hook(module, input, output):
-
-                hidden_states = output[0]  # Shape: (batch_size, seq_len, hidden_dim)
-
-                # Modify hidden states
-                expanded_bias = bias_embedding_4bit.unsqueeze(0).unsqueeze(0).expand(
-                    hidden_states.size(0), hidden_states.size(1), -1
-                )
-                alpha = torch.sigmoid((hidden_states.std(dim=-1, keepdim=True) / hidden_states.std()) * hs_scaling)
-
-                modified_hidden = hidden_states + alpha * (bias * expanded_bias.to(hidden_states.device))
-
-                return (modified_hidden,) + output[1:]
-
-            
-            @torch.no_grad()
-            def mlp_hook(module, input, output):
-                alpha = bias * torch.sigmoid(output.mean(dim=-1, keepdim=True))
-                expanded_bias = bias_embedding_4bit.unsqueeze(0).unsqueeze(0).expand(
-                    output.size(0), output.size(1), -1
-                )
-                modified_output = output + alpha * expanded_bias.to(output.device)
-                return modified_output
-
-            # Apply hooks only to every other layer for efficiency
-            layers = self.model.model.layers
-            for i in range(0, 27):  # Ensure only indices 0 to 23 are used
-                if i >= len(layers):  # Prevent out-of-bounds errors
-                    print(f"Layer index out of bound, maximum decoder layer as known : {layers} layers")
-                    break
-                if i % 2 == 0:
-                    self.hook_handles.append(layers[i].mlp.register_forward_hook(mlp_hook))
-                else:
-                    self.hook_handles.append(layers[i].self_attn.register_forward_hook(attention_hook))
-
-        except Exception as e:
-            print(f"Error in Latent Injection setup: {e}")
-            self._cleanup_hooks()
-
-    def _cleanup_hooks(self):
-        """Clean up all hook handles"""
-        for handle in self.hook_handles:
-            handle.remove()
-        self.hook_handles = []
-
-    @torch.no_grad()
-    def get_embeddings(self, text):
-        """Get embeddings for a single text input"""
-        inputs = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True)
-        input_ids = inputs.input_ids.to(self.device)
-        outputs = self.model.base_model(input_ids=input_ids)
-        embeddings = outputs.last_hidden_state.mean(dim=1)
-        return embeddings
-
-    def _format_conversation(self, messages):
-        """Format the conversation history"""
-        parts = []
-        for message in messages:
-            parts.append(f"<|{message['role']}|>\n{message['content']}\n")
-        parts.append("<|assistant|>\n")
-        return "".join(parts)
-
-    def _clean_response(self, text):
-        """Clean response text by removing special tokens and emojis"""
-        # Remove special tokens like <|assistant|>, <|user|>, etc.
-        text = re.sub(r'<\|[^|]+\|>', '', text)
-        
-        # Remove emojis using a regex pattern that matches a wide range of emojis
-        emoji_pattern = re.compile(
-            "["
-            u"\U0001F600-\U0001F64F"  # Emoticons
-            u"\U0001F300-\U0001F5FF"  # Symbols & Pictographs
-            u"\U0001F680-\U0001F6FF"  # Transport & Map Symbols
-            u"\U0001F700-\U0001F77F"  # Alchemical Symbols
-            u"\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
-            u"\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
-            u"\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
-            u"\U0001FA00-\U0001FA6F"  # Chess Symbols
-            u"\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
-            u"\U00002702-\U000027B0"  # Dingbats
-            u"\U000024C2-\U0001F251"  # Enclosed Characters
-            "]+", flags=re.UNICODE
-        )
-        
-        # Remove emojis from the text
-        text = emoji_pattern.sub(r'', text)
-        
-        return text
-
-
-'''
-
-
-

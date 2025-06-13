@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CutieChatter - Login</title>
+    <style>
+        :root {
+            /* Dark theme variables (default) */
+            --bg-primary: #212121;
+            --bg-secondary: #171717;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #fff;
+            --text-secondary: #8e8ea0;
+            --border-color: #333;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --hover-bg: #333;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+        }
+
+        [data-theme="light"] {
+            /* Light theme variables */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #f1f3f4;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #e8eaed;
+            --accent-color: #1a73e8;
+            --accent-hover: #1557b0;
+            --success-color: #137333;
+            --error-color: #d93025;
+            --hover-bg: #f1f3f4;
+            --gradient-start: #4285f4;
+            --gradient-end: #34a853;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .auth-container {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        .password-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        .auth-button {
+            padding: 12px 24px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .auth-button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .auth-button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .auth-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .auth-link:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 16px;
+        }
+
+        .guest-access {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .guest-button {
+            padding: 10px 20px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .guest-button:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+            border-color: var(--accent-color);
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .form-tabs {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .tab-button.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .form-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.15s ease-in-out;
+        }
+
+        .form-section.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Add smooth transition for tab buttons */
+        .tab-button {
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Add transition for messages */
+        .message {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-weak { background: var(--error-color); width: 25%; }
+        .strength-fair { background: #f59e0b; width: 50%; }
+        .strength-good { background: #10b981; width: 75%; }
+        .strength-strong { background: var(--success-color); width: 100%; }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .auth-container {
+                margin: 20px;
+                padding: 24px;
+            }
+
+            .logo {
+                font-size: 36px;
+            }
+
+            .auth-title {
+                font-size: 20px;
+            }
+        }
+
+        /* Animation */
+        .auth-container {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+            🌙
+        </button>
+
+        <div class="auth-header">
+            <div class="logo">🤖</div>
+            <h1 class="auth-title">CutieChatter</h1>
+            <p class="auth-subtitle">AI Assistant yang Cerdas dan Ramah</p>
+        </div>
+
+        <!-- Message Display -->
+        <div class="message" id="messageDisplay">
+            <span id="messageText"></span>
+        </div>
+
+        <!-- Form Tabs -->
+        <div class="form-tabs">
+            <button class="tab-button active" onclick="switchTab('signin')" id="signinTab">
+                Masuk
+            </button>
+            <button class="tab-button" onclick="switchTab('signup')" id="signupTab">
+                Daftar
+            </button>
+        </div>
+
+        <!-- Sign In Form -->
+        <div class="form-section active" id="signinSection">
+            <form class="auth-form" onsubmit="handleSignIn(event)">
+                <div class="form-group">
+                    <label class="form-label" for="signinUsername">Username atau Email</label>
+                    <input 
+                        type="text" 
+                        id="signinUsername" 
+                        class="form-input" 
+                        placeholder="Masukkan username atau email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="signinPassword">Password</label>
+                    <div class="password-group">
+                        <input 
+                            type="password" 
+                            id="signinPassword" 
+                            class="form-input" 
+                            placeholder="Masukkan password"
+                            required
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword('signinPassword')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-button" id="signinButton">
+                    <span>Masuk</span>
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <a href="#" class="auth-link" onclick="showForgotPassword()">
+                    Lupa password?
+                </a>
+            </div>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div class="form-section" id="signupSection">
+            <form class="auth-form" onsubmit="handleSignUp(event)">
+                <div class="form-group">
+                    <label class="form-label" for="signupUsername">Username</label>
+                    <input 
+                        type="text" 
+                        id="signupUsername" 
+                        class="form-input" 
+                        placeholder="Pilih username unik"
+                        required
+                        minlength="3"
+                        maxlength="20"
+                        pattern="[a-zA-Z0-9_]+"
+                        title="Username hanya boleh huruf, angka, dan underscore"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="signupEmail">Email</label>
+                    <input 
+                        type="email" 
+                        id="signupEmail" 
+                        class="form-input" 
+                        placeholder="Masukkan email valid"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="signupPassword">Password</label>
+                    <div class="password-group">
+                        <input 
+                            type="password" 
+                            id="signupPassword" 
+                            class="form-input" 
+                            placeholder="Minimal 6 karakter"
+                            required
+                            minlength="6"
+                            oninput="checkPasswordStrength()"
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword('signupPassword')">
+                            👁️
+                        </button>
+                    </div>
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <span id="strengthText">Masukkan password</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Konfirmasi Password</label>
+                    <div class="password-group">
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            class="form-input" 
+                            placeholder="Ulangi password"
+                            required
+                            oninput="checkPasswordMatch()"
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-button" id="signupButton">
+                    <span>Daftar</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Forgot Password Form -->
+        <div class="form-section" id="forgotSection">
+            <form class="auth-form" onsubmit="handleForgotPassword(event)">
+                <div class="form-group">
+                    <label class="form-label" for="forgotEmail">Email</label>
+                    <input 
+                        type="email" 
+                        id="forgotEmail" 
+                        class="form-input" 
+                        placeholder="Masukkan email terdaftar"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="auth-button" id="forgotButton">
+                    <span>Kirim Link Reset</span>
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <a href="#" class="auth-link" onclick="switchTab('signin')">
+                    Kembali ke login
+                </a>
+            </div>
+        </div>
+
+        <!-- Guest Access -->
+        <div class="divider">
+            <span>atau</span>
+        </div>
+
+        <div class="guest-access">
+            <a href="#" class="guest-button" onclick="continueAsGuest()">
+                <span>👤</span>
+                <span>Lanjutkan sebagai Tamu</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- QWebChannel script for communication with Python -->
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <script>
+        // Global variables
+        let authBridge = null;
+        let currentTheme = localStorage.getItem('auth_theme') || 'dark';
+
+        // Initialize theme on page load
+        function initializeTheme() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            updateThemeToggle();
+        }
+
+        // Toggle theme function
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('auth_theme', currentTheme);
+            updateThemeToggle();
+        }
+
+        // Update theme toggle button
+        function updateThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+        }
+
+        // Initialize WebChannel communication - FIXED
+        new QWebChannel(qt.webChannelTransport, function(channel) {
+            authBridge = channel.objects.authBridge;
+            console.log("✅ Auth bridge connected:", authBridge);
+            
+            if (authBridge) {
+                // Connect signals if available
+                if (authBridge.loginSuccessful) {
+                    authBridge.loginSuccessful.connect(function(loginData) {
+                        console.log("🎉 Login successful:", loginData);
+                        handleLoginSuccess(loginData);
+                    });
+                }
+                
+                if (authBridge.authError) {
+                    authBridge.authError.connect(function(error) {
+                        console.log("❌ Auth error:", error);
+                        showMessage(error, 'error');
+                        setAllButtonsLoading(false);
+                    });
+                }
+                
+                console.log("✅ Auth signals connected");
+            } else {
+                console.error("❌ AuthBridge not available!");
+                showMessage('Authentication bridge tidak tersedia', 'error');
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTheme();
+            console.log("✅ Auth page initialized");
+        });
+
+        // Tab switching
+        function switchTab(tab, keepMessage = false) {
+            // Hide all sections with fade effect
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.style.opacity = '0';
+                setTimeout(() => {
+                    section.classList.remove('active');
+                    if (tab === 'signin' && section.id === 'signinSection' ||
+                        tab === 'signup' && section.id === 'signupSection') {
+                        section.classList.add('active');
+                        // Fade in the new section
+                        setTimeout(() => {
+                            section.style.opacity = '1';
+                        }, 50);
+                    }
+                }, 150);
+            });
+            
+            // Remove active from all tabs
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Activate selected tab
+            if (tab === 'signin') {
+                document.getElementById('signinTab').classList.add('active');
+                // Focus username field
+                setTimeout(() => {
+                    const usernameField = document.getElementById('signinUsername');
+                    if (usernameField && !usernameField.value) {
+                        usernameField.focus();
+                    }
+                }, 200);
+            } else if (tab === 'signup') {
+                document.getElementById('signupTab').classList.add('active');
+                // Focus username field
+                setTimeout(() => {
+                    const usernameField = document.getElementById('signupUsername');
+                    if (usernameField && !usernameField.value) {
+                        usernameField.focus();
+                    }
+                }, 200);
+            }
+            
+            // Clear message unless keepMessage is true
+            if (!keepMessage) {
+                clearMessage();
+            }
+        }
+
+        // Show forgot password form
+        function showForgotPassword() {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            document.getElementById('forgotSection').classList.add('active');
+            clearMessage();
+        }
+
+        // Password visibility toggle
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const toggle = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                toggle.textContent = '👁️';
+            }
+        }
+
+        // Password strength checker
+        function checkPasswordStrength() {
+            const password = document.getElementById('signupPassword').value;
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            let text = 'Sangat lemah';
+            let className = 'strength-weak';
+            
+            if (password.length >= 6) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            switch (strength) {
+                case 0:
+                case 1:
+                    text = 'Sangat lemah';
+                    className = 'strength-weak';
+                    break;
+                case 2:
+                    text = 'Lemah';
+                    className = 'strength-fair';
+                    break;
+                case 3:
+                case 4:
+                    text = 'Bagus';
+                    className = 'strength-good';
+                    break;
+                case 5:
+                    text = 'Sangat kuat';
+                    className = 'strength-strong';
+                    break;
+            }
+            
+            strengthFill.className = `strength-fill ${className}`;
+            strengthText.textContent = text;
+        }
+
+        // Password match checker
+        function checkPasswordMatch() {
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirmInput = document.getElementById('confirmPassword');
+            
+            if (confirmPassword && password !== confirmPassword) {
+                confirmInput.style.borderColor = 'var(--error-color)';
+            } else {
+                confirmInput.style.borderColor = 'var(--border-color)';
+            }
+        }
+
+        // Message display functions
+        function showMessage(text, type) {
+            const messageDisplay = document.getElementById('messageDisplay');
+            const messageText = document.getElementById('messageText');
+            
+            messageText.textContent = text;
+            messageDisplay.className = `message ${type} show`;
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    clearMessage();
+                }, 5000);
+            }
+        }
+
+        function clearMessage() {
+            const messageDisplay = document.getElementById('messageDisplay');
+            messageDisplay.classList.remove('show');
+        }
+
+        // Loading state management
+        function setLoading(buttonId, loading) {
+            const button = document.getElementById(buttonId);
+            
+            if (loading) {
+                button.disabled = true;
+                button.innerHTML = '<div class="loading-spinner"></div><span>Memproses...</span>';
+            } else {
+                button.disabled = false;
+                // Reset button text based on button type
+                const originalTexts = {
+                    'signinButton': 'Masuk',
+                    'signupButton': 'Daftar',
+                    'forgotButton': 'Kirim Link Reset'
+                };
+                button.innerHTML = `<span>${originalTexts[buttonId] || 'Submit'}</span>`;
+            }
+        }
+
+        function setAllButtonsLoading(loading) {
+            ['signinButton', 'signupButton', 'forgotButton'].forEach(buttonId => {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    setLoading(buttonId, loading);
+                }
+            });
+        }
+
+        // Handle login success from bridge signal
+        function handleLoginSuccess(loginData) {
+            console.log("🎉 Handling login success:", loginData);
+            showMessage('Login berhasil!', 'success');
+            
+            // The main app will handle the redirect via auth_bridge
+            setTimeout(() => {
+                console.log("✅ Login process completed");
+            }, 1500);
+        }
+
+        // Form handlers - FIXED to use proper bridge methods
+        function handleSignIn(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('signinUsername').value.trim();
+            const password = document.getElementById('signinPassword').value;
+            
+            if (!username || !password) {
+                showMessage('Mohon lengkapi semua field', 'error');
+                return;
+            }
+            
+            if (!authBridge) {
+                showMessage('Authentication bridge tidak tersedia', 'error');
+                return;
+            }
+            
+            setLoading('signinButton', true);
+            clearMessage();
+            
+            console.log("🔐 Attempting sign in with username:", username);
+            
+            try {
+                // Call the proper bridge method - synchronous call
+                const result = authBridge.login(username, password);
+                console.log("📞 Bridge login called, result:", result);
+                
+                // Parse result if it's a JSON string
+                if (typeof result === 'string') {
+                    try {
+                        const response = JSON.parse(result);
+                        if (!response.success) {
+                            showMessage(response.message || 'Login gagal', 'error');
+                            setLoading('signinButton', false);
+                        }
+                        // Success will be handled by signal
+                    } catch (e) {
+                        console.error("Error parsing login result:", e);
+                        showMessage('Error parsing response', 'error');
+                        setLoading('signinButton', false);
+                    }
+                }
+            } catch (error) {
+                console.error('Sign in error:', error);
+                showMessage('Terjadi kesalahan saat login', 'error');
+                setLoading('signinButton', false);
+            }
+        }
+
+        function handleSignUp(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!username || !email || !password || !confirmPassword) {
+                showMessage('Mohon lengkapi semua field', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('Password dan konfirmasi password tidak sama', 'error');
+                return;
+            }
+            
+            if (!authBridge) {
+                showMessage('Authentication bridge tidak tersedia', 'error');
+                return;
+            }
+            
+            setLoading('signupButton', true);
+            clearMessage();
+            
+            console.log("📝 Attempting sign up with username:", username);
+            console.log("🔍 authBridge object:", authBridge);
+            console.log("🔍 register method:", authBridge.register);
+            
+            try {
+                // Call the proper bridge method
+                const result = authBridge.register(username, email, password, confirmPassword);
+                console.log("📞 Bridge register called, result:", result);
+                console.log("📞 Result type:", typeof result);
+                console.log("📞 Result value:", result);
+                
+                // Handle different result types
+                if (result === undefined || result === null) {
+                    console.error("❌ Bridge method returned undefined/null");
+                    showMessage('Bridge method tidak mengembalikan hasil', 'error');
+                    setLoading('signupButton', false);
+                    return;
+                }
+                
+                // Parse result if it's a JSON string
+                if (typeof result === 'string') {
+                    try {
+                        const response = JSON.parse(result);
+                        console.log("✅ Parsed response:", response);
+                        
+                        // Check if the response indicates user already exists
+                        if (response.message && response.message.includes("already exists")) {
+                            showMessage('Username atau email sudah terdaftar', 'error');
+                            setLoading('signupButton', false);
+                            return;
+                        }
+                        
+                        // Check for success - either explicit success flag or absence of error message
+                        if (response.success || !response.message) {
+                            console.log("✅ Registration successful!");
+                            showMessage('Registrasi berhasil!', 'success');
+                            
+                            // Clear form fields
+                            document.getElementById('signupUsername').value = '';
+                            document.getElementById('signupEmail').value = '';
+                            document.getElementById('signupPassword').value = '';
+                            document.getElementById('confirmPassword').value = '';
+                            
+                            // Switch to sign in tab after successful registration
+                            setTimeout(() => {
+                                // Switch to login tab
+                                switchTab('signin');
+                                // Pre-fill the username
+                                document.getElementById('signinUsername').value = username;
+                                // Show success message in login tab
+                                showMessage('Registrasi berhasil! Silakan login.', 'success');
+                            }, 1000);
+                        } else {
+                            console.log("❌ Registration failed:", response.message);
+                            showMessage(response.message || 'Registrasi gagal', 'error');
+                        }
+                        setLoading('signupButton', false);
+                    } catch (e) {
+                        console.error("❌ Error parsing register result:", e);
+                        console.error("❌ Raw result was:", result);
+                        
+                        // If the raw result contains "success" or "registered", treat it as success
+                        if (result.toLowerCase().includes('success') || result.toLowerCase().includes('registered')) {
+                            console.log("✅ Registration appears successful based on raw response");
+                            showMessage('Registrasi berhasil!', 'success');
+                            
+                            // Clear form fields
+                            document.getElementById('signupUsername').value = '';
+                            document.getElementById('signupEmail').value = '';
+                            document.getElementById('signupPassword').value = '';
+                            document.getElementById('confirmPassword').value = '';
+                            
+                            setTimeout(() => {
+                                switchTab('signin');
+                                document.getElementById('signinUsername').value = username;
+                                showMessage('Registrasi berhasil! Silakan login.', 'success');
+                            }, 1000);
+                        } else {
+                            showMessage('Terjadi kesalahan saat mendaftar', 'error');
+                        }
+                        setLoading('signupButton', false);
+                    }
+                } else if (typeof result === 'object') {
+                    // Handle direct object result
+                    console.log("✅ Direct object response:", result);
+                    if (result.success || !result.message) {
+                        console.log("✅ Registration successful!");
+                        showMessage('Registrasi berhasil!', 'success');
+                        
+                        // Clear form fields
+                        document.getElementById('signupUsername').value = '';
+                        document.getElementById('signupEmail').value = '';
+                        document.getElementById('signupPassword').value = '';
+                        document.getElementById('confirmPassword').value = '';
+                        
+                        setTimeout(() => {
+                            switchTab('signin');
+                            document.getElementById('signinUsername').value = username;
+                            showMessage('Registrasi berhasil! Silakan login.', 'success');
+                        }, 1000);
+                    } else {
+                        console.log("❌ Registration failed:", result.message);
+                        showMessage(result.message || 'Registrasi gagal', 'error');
+                    }
+                    setLoading('signupButton', false);
+                } else {
+                    console.error("❌ Unexpected result type:", typeof result);
+                    showMessage('Unexpected response type: ' + typeof result, 'error');
+                    setLoading('signupButton', false);
+                }
+            } catch (error) {
+                console.error('❌ Sign up error:', error);
+                console.error('❌ Error stack:', error.stack);
+                showMessage('Terjadi kesalahan saat mendaftar: ' + error.message, 'error');
+                setLoading('signupButton', false);
+            }
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('forgotEmail').value.trim();
+            
+            if (!email) {
+                showMessage('Mohon masukkan email', 'error');
+                return;
+            }
+            
+            if (!authBridge) {
+                showMessage('Authentication bridge tidak tersedia', 'error');
+                return;
+            }
+            
+            setLoading('forgotButton', true);
+            clearMessage();
+            
+            console.log("📧 Attempting forgot password for email:", email);
+            
+            try {
+                // Call the proper bridge method
+                const result = authBridge.forgotPassword(email);
+                console.log("📞 Bridge forgotPassword called, result:", result);
+                
+                // Parse result if it's a JSON string
+                if (typeof result === 'string') {
+                    try {
+                        const response = JSON.parse(result);
+                        showMessage(response.message || 'Link reset telah dikirim!', response.success ? 'success' : 'error');
+                        setLoading('forgotButton', false);
+                    } catch (e) {
+                        console.error("Error parsing forgot password result:", e);
+                        showMessage('Error parsing response', 'error');
+                        setLoading('forgotButton', false);
+                    }
+                }
+            } catch (error) {
+                console.error('Forgot password error:', error);
+                showMessage('Terjadi kesalahan saat memproses permintaan', 'error');
+                setLoading('forgotButton', false);
+            }
+        }
+
+        function continueAsGuest() {
+            console.log("👤 Continue as guest");
+            
+            if (!authBridge) {
+                console.error("❌ AuthBridge not available for guest mode");
+                // Fallback: directly redirect or show error
+                alert('Authentication system tidak tersedia');
+                return;
+            }
+            
+            try {
+                // Call guest mode method
+                if (authBridge.continueAsGuest) {
+                    authBridge.continueAsGuest();
+                    console.log("✅ Guest mode activated via bridge");
+                } else if (authBridge.redirectToMainApp) {
+                    // Alternative: direct redirect with guest flag
+                    authBridge.redirectToMainApp();
+                    console.log("✅ Redirecting to main as guest");
+                } else {
+                    console.error("❌ No guest mode method available in bridge");
+                    showMessage('Guest mode tidak tersedia', 'error');
+                }
+            } catch (error) {
+                console.error('Guest mode error:', error);
+                showMessage('Terjadi kesalahan saat masuk sebagai tamu', 'error');
+            }
+        }
+
+        // Handle Enter key in forms
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const activeSection = document.querySelector('.form-section.active');
+                if (activeSection) {
+                    const form = activeSection.querySelector('form');
+                    if (form) {
+                        form.requestSubmit();
+                    }
+                }
+            }
+        });
+
+        // Add some debug functions for testing
+        window.debugAuth = {
+            testBridge: function() {
+                console.log("🔍 Testing auth bridge:", authBridge);
+                if (authBridge) {
+                    console.log("📋 Available methods:", Object.getOwnPropertyNames(authBridge));
+                    console.log("📋 Available properties:", Object.getOwnPropertyDescriptors(authBridge));
+                } else {
+                    console.log("❌ Auth bridge not available");
+                }
+            },
+            
+            simulateLogin: function() {
+                if (authBridge && authBridge.login) {
+                    const result = authBridge.login("test", "password");
+                    console.log("Test login result:", result);
+                } else {
+                    console.log("Login method not available");
+                }
+            },
+            
+            testRegister: function() {
+                if (authBridge && authBridge.register) {
+                    console.log("🧪 Testing register method...");
+                    try {
+                        const result = authBridge.register("testuser123", "test@test.com", "password123", "password123");
+                        console.log("✅ Test register result:", result);
+                        console.log("✅ Result type:", typeof result);
+                        return result;
+                    } catch (error) {
+                        console.error("❌ Test register error:", error);
+                        return null;
+                    }
+                } else {
+                    console.log("❌ Register method not available");
+                    return null;
+                }
+            }
+        };
+
+        console.log("✅ Auth page JavaScript loaded successfully!");
+        console.log("🔧 Debug functions available:");
+        console.log("  - window.debugAuth.testBridge()");
+        console.log("  - window.debugAuth.simulateLogin()");
+        console.log("  - window.debugAuth.testRegister()");
+    </script>
+</body>
+</html>
