@@ -21,6 +21,7 @@ class AuthBridge(QObject):
         self.auth_manager = AuthManager()
         self.current_user = None
         self.current_session = None
+        self.parent_app = parent  # FIXED: Properly set parent_app
         print("✅ AuthBridge initialized")
     
     # DITAMBAHKAN: Method login untuk JavaScript

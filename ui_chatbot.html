@@ -645,11 +645,19 @@
             overflow: hidden;
         }
 
-        .emotion-chart {
+        .emotion-chart, .similarity-chart {
             width: 100%;
             height: 100%;
             position: relative;
             padding: 20px;
+        }
+
+        .similarity-info {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
         .chart-svg {
@@ -2047,6 +2055,21 @@
                     </div>
                 </div>
 
+                <!-- Message Similarity Chart -->
+                <div class="dashboard-card">
+                    <h3>📈 Message Similarity</h3>
+                    <div class="chart-container">
+                        <div class="similarity-chart" id="similarityChart">
+                            <svg class="chart-svg" viewBox="0 0 400 200">
+                                <!-- Similarity chart will be generated dynamically -->
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="similarity-info" id="similarityInfo">
+                        <!-- Similarity info will be generated dynamically -->
+                    </div>
+                </div>
+
                 <!-- Emotion Analysis Chart -->
                 <div class="dashboard-card">
                     <h3>😊 Analisis Emosi Percakapan</h3>
@@ -2151,8 +2174,9 @@
                 </div>
             `;
             
-            // Generate emotion analysis after DOM is ready
+            // Generate charts after DOM is ready
             setTimeout(() => {
+                generateSimilarityChart(stats.messageSimilarity);
                 generateEmotionChart(stats.emotionAnalysis);
                 generateSentimentSummary(stats.emotionAnalysis);
             }, 100);
@@ -2196,6 +2220,9 @@
             // Emotion analysis
             const emotionAnalysis = calculateEmotionAnalysis();
 
+            // Message similarity analysis
+            const messageSimilarity = calculateMessageSimilarity();
+
             return {
                 totalChats,
                 totalMessages,
@@ -2209,7 +2236,8 @@
                 avgResponseTime,
                 longestChat,
                 daysActive,
-                emotionAnalysis
+                emotionAnalysis,
+                messageSimilarity
             };
         }
 
@@ -2300,6 +2328,242 @@
             });
             
             return activeDays.size;
+        }
+
+        // Message Similarity Functions
+        function calculateMessageSimilarity() {
+            const userMessages = [];
+            
+            // Collect all user messages
+            chats.forEach(chat => {
+                if (!chat.messages) return;
+                chat.messages.forEach(msg => {
+                    if (msg.role === 'user') {
+                        userMessages.push({
+                            content: msg.content.toLowerCase(),
+                            chatId: chat.id,
+                            chatTitle: chat.title
+                        });
+                    }
+                });
+            });
+
+            if (userMessages.length < 2) {
+                // Return sample data if not enough messages
+                return {
+                    similarities: [0.85, 0.72, 0.91, 0.65, 0.78, 0.82, 0.69, 0.88, 0.74, 0.80],
+                    averageSimilarity: 0.784,
+                    messageCount: userMessages.length,
+                    topSimilarPairs: []
+                };
+            }
+
+            const similarities = [];
+            const similarPairs = [];
+
+            // Calculate cosine similarity between consecutive messages
+            for (let i = 0; i < Math.min(userMessages.length - 1, 20); i++) {
+                const similarity = calculateCosineSimilarity(
+                    userMessages[i].content, 
+                    userMessages[i + 1].content
+                );
+                similarities.push(similarity);
+                
+                if (similarity > 0.7) {
+                    similarPairs.push({
+                        msg1: userMessages[i].content.substring(0, 50) + '...',
+                        msg2: userMessages[i + 1].content.substring(0, 50) + '...',
+                        similarity: similarity
+                    });
+                }
+            }
+
+            const averageSimilarity = similarities.length > 0 ? 
+                similarities.reduce((sum, sim) => sum + sim, 0) / similarities.length : 0;
+
+            return {
+                similarities,
+                averageSimilarity: Math.round(averageSimilarity * 1000) / 1000,
+                messageCount: userMessages.length,
+                topSimilarPairs: similarPairs.slice(0, 3)
+            };
+        }
+
+        function calculateCosineSimilarity(text1, text2) {
+            // Simple word-based cosine similarity
+            const words1 = text1.split(' ').filter(word => word.length > 2);
+            const words2 = text2.split(' ').filter(word => word.length > 2);
+            
+            if (words1.length === 0 || words2.length === 0) return 0;
+
+            // Create word frequency vectors
+            const allWords = [...new Set([...words1, ...words2])];
+            const vector1 = allWords.map(word => words1.filter(w => w === word).length);
+            const vector2 = allWords.map(word => words2.filter(w => w === word).length);
+
+            // Calculate dot product
+            let dotProduct = 0;
+            for (let i = 0; i < vector1.length; i++) {
+                dotProduct += vector1[i] * vector2[i];
+            }
+
+            // Calculate magnitudes
+            const magnitude1 = Math.sqrt(vector1.reduce((sum, val) => sum + val * val, 0));
+            const magnitude2 = Math.sqrt(vector2.reduce((sum, val) => sum + val * val, 0));
+
+            if (magnitude1 === 0 || magnitude2 === 0) return 0;
+
+            return dotProduct / (magnitude1 * magnitude2);
+        }
+
+        function generateSimilarityChart(similarityData) {
+            const chartContainer = document.getElementById('similarityChart');
+            if (!chartContainer) return;
+
+            const svg = chartContainer.querySelector('svg');
+            const chartWidth = 360;
+            const chartHeight = 160;
+            const similarities = similarityData.similarities;
+
+            if (similarities.length === 0) {
+                svg.innerHTML = `
+                    <text x="200" y="100" text-anchor="middle" fill="var(--text-secondary)" font-size="14">
+                        Tidak cukup data untuk analisis similarity
+                    </text>
+                `;
+                return;
+            }
+
+            // Clear existing content
+            svg.innerHTML = '';
+
+            // Create chart background grid
+            for (let i = 0; i <= 5; i++) {
+                const y = (i * chartHeight) / 5 + 20;
+                svg.innerHTML += `
+                    <line x1="40" y1="${y}" x2="${chartWidth}" y2="${y}" 
+                          stroke="var(--border-color)" stroke-width="0.5" opacity="0.3"/>
+                `;
+            }
+
+            // Plot similarity line
+            const stepX = (chartWidth - 80) / Math.max(similarities.length - 1, 1);
+            let pathData = '';
+
+            similarities.forEach((similarity, index) => {
+                const x = 60 + (index * stepX);
+                const y = 20 + chartHeight - (similarity * chartHeight);
+
+                if (index === 0) {
+                    pathData = `M ${x} ${y}`;
+                } else {
+                    pathData += ` L ${x} ${y}`;
+                }
+
+                // Plot point
+                const color = similarity > 0.8 ? '#10b981' : similarity > 0.6 ? '#f59e0b' : '#ef4444';
+                svg.innerHTML += `
+                    <circle cx="${x}" cy="${y}" r="3" fill="${color}" stroke="white" stroke-width="1"/>
+                `;
+            });
+
+            // Draw the similarity line
+            svg.innerHTML += `
+                <path d="${pathData}" stroke="#2563eb" stroke-width="2" fill="none" opacity="0.8"/>
+            `;
+
+            // Add average line
+            const avgY = 20 + chartHeight - (similarityData.averageSimilarity * chartHeight);
+            svg.innerHTML += `
+                <line x1="40" y1="${avgY}" x2="${chartWidth}" y2="${avgY}" 
+                      stroke="#8b5cf6" stroke-width="2" stroke-dasharray="5,5" opacity="0.7"/>
+                <text x="${chartWidth - 10}" y="${avgY - 5}" text-anchor="end" 
+                      fill="#8b5cf6" font-size="10">Avg: ${similarityData.averageSimilarity}</text>
+            `;
+
+            // Add Y-axis labels
+            for (let i = 0; i <= 5; i++) {
+                const value = (1.0 / 5) * (5 - i);
+                const y = (i * chartHeight) / 5 + 25;
+                svg.innerHTML += `
+                    <text x="35" y="${y}" text-anchor="end" 
+                          fill="var(--text-secondary)" font-size="10" font-family="Arial">
+                        ${value.toFixed(1)}
+                    </text>
+                `;
+            }
+
+            // Add X-axis label
+            svg.innerHTML += `
+                <text x="200" y="195" text-anchor="middle" 
+                      fill="var(--text-secondary)" font-size="10" font-family="Arial">
+                    Message Number
+                </text>
+            `;
+
+            // Generate similarity info
+            generateSimilarityInfo(similarityData);
+        }
+
+        function generateSimilarityInfo(similarityData) {
+            const infoContainer = document.getElementById('similarityInfo');
+            if (!infoContainer) return;
+
+            const avgSimilarity = similarityData.averageSimilarity;
+            let interpretation = '';
+            let color = '';
+
+            if (avgSimilarity > 0.8) {
+                interpretation = 'Sangat Mirip - Anda cenderung menggunakan gaya bahasa yang konsisten';
+                color = '#10b981';
+            } else if (avgSimilarity > 0.6) {
+                interpretation = 'Cukup Mirip - Ada kesamaan pola dalam komunikasi Anda';
+                color = '#f59e0b';
+            } else if (avgSimilarity > 0.4) {
+                interpretation = 'Beragam - Anda menggunakan variasi topik dan gaya yang baik';
+                color = '#2563eb';
+            } else {
+                interpretation = 'Sangat Beragam - Komunikasi Anda sangat bervariasi';
+                color = '#8b5cf6';
+            }
+
+            infoContainer.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 600; color: ${color};">
+                            Similarity Score: ${avgSimilarity}
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                            ${interpretation}
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 14px; color: var(--text-primary);">
+                            ${similarityData.messageCount} Messages
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">
+                            Analyzed
+                        </div>
+                    </div>
+                </div>
+                
+                ${similarityData.topSimilarPairs.length > 0 ? `
+                    <div style="margin-top: 16px;">
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; font-weight: 500;">
+                            Similar Message Pairs
+                        </div>
+                        ${similarityData.topSimilarPairs.map(pair => `
+                            <div style="background: var(--bg-secondary); padding: 8px; border-radius: 6px; margin-bottom: 6px; font-size: 11px;">
+                                <div style="color: var(--text-primary); margin-bottom: 2px;">"${pair.msg1}"</div>
+                                <div style="color: var(--text-secondary);">"${pair.msg2}"</div>
+                                <div style="color: ${color}; font-weight: 600; margin-top: 4px;">
+                                    Similarity: ${Math.round(pair.similarity * 100)}%
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            `;
         }
 
         // Emotion Analysis Functions

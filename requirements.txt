@@ -1,0 +1,24 @@
+# PyQt6 untuk GUI
+PyQt6>=6.6.0
+PyQt6-WebEngine>=6.6.0
+
+# AI/ML Dependencies
+transformers>=4.35.0
+torch>=2.0.0
+ollama>=0.1.7
+tokenizers>=0.15.0
+
+# Utility libraries
+screeninfo>=0.8.1
+requests>=2.31.0
+
+# PyInstaller untuk deployment
+pyinstaller>=6.0.0
+
+# Optional untuk OCR jika diperlukan
+# pillow>=10.0.0
+# pytesseract>=0.3.10
+
+# Optional untuk audio processing jika diperlukan  
+# sounddevice>=0.4.6
+# pydub>=0.25.1 
