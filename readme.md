@@ -247,7 +247,7 @@ If you encounter any issues:
 2. Verify your environment configuration
 3. Check the console/terminal for error messages
 4. Ensure all dependencies are installed
-
+by Owen Prathama
 ## 🎯 Next Steps
 
 After successful setup:
