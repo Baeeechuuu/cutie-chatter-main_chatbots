@@ -1,122 +1,222 @@
-# CutieChatter 💬
+ # CutieChatter Desktop 💬🖥️
 
-A modern web-based chatbot application with multiple AI personalities, built with Flask and PostgreSQL. Chat with different AI characters, each with unique personalities and conversation styles.
+Aplikasi chatbot desktop berbasis PyQt6 dengan AI DeepSeek-R1 untuk Windows. Chat dengan AI yang cerdas menggunakan antarmuka desktop yang modern dan responsif.
 
-## ✨ Features
+## 🎯 Fitur Utama
 
-- 🤖 Multiple AI chatbot personalities
-- 👤 User authentication and registration
-- 💾 Chat history persistence
-- 🎨 Modern, responsive web interface
-- ☁️ Cloud database support (Supabase)
-- 🔒 Secure session management
+- 🖥️ **Aplikasi Desktop Native** - Berjalan langsung di Windows
+- 🤖 **AI DeepSeek-R1** - Model AI canggih untuk percakapan natural
+- 💭 **Sentiment Analysis** - Analisis emosi dan sentimen dalam percakapan
+- 👤 **User Authentication** - Sistem login dan registrasi pengguna
+- 💾 **Chat History** - Penyimpanan riwayat percakapan
+- 🎨 **Interface Modern** - Antarmuka web hybrid dalam aplikasi desktop
+- 📁 **OCR Support** - Baca teks dari gambar dan dokumen (opsional)
+- 🔊 **TTS Support** - Text-to-Speech (opsional)
 
-## 🛠️ Tech Stack
+## 📋 Persyaratan Sistem
 
-- **Backend**: Python Flask
-- **Database**: PostgreSQL (Supabase)
-- **Frontend**: HTML, CSS, JavaScript
-- **Authentication**: Custom session-based auth
-- **AI**: OpenAI GPT integration
+### Sistem Operasi
+- **Windows 10** atau yang lebih baru (64-bit)
+- RAM minimum: **8GB** (16GB direkomendasikan)
+- Storage: **5GB** ruang kosong
 
-## 📋 Prerequisites
+### Software yang Diperlukan
+- **Python 3.8+** (Python 3.10-3.11 direkomendasikan)
+- **Ollama** - Server AI lokal
+- **Git** (untuk clone repository)
 
-Before running this application, make sure you have:
+## 🚀 Panduan Instalasi Lengkap
 
-- Python 3.7 or higher
-- A Supabase account and project
-- OpenAI API key (optional, for AI features)
+### Langkah 1: Install Python
 
-## 🚀 Installation & Setup
+1. Download Python dari [python.org](https://www.python.org/downloads/)
+2. **PENTING**: Centang "Add Python to PATH" saat instalasi
+3. Verifikasi instalasi:
+```bash
+python --version
+pip --version
+```
 
-### 1. Clone the Repository
+### Langkah 2: Install Ollama
 
+1. Download Ollama untuk Windows dari [ollama.ai](https://ollama.ai/)
+2. Install Ollama
+3. Buka Command Prompt dan jalankan:
+```bash
+# Start Ollama server
+ollama serve
+
+# Di terminal baru, download model DeepSeek-R1
+ollama pull deepseek-r1:1.5b
+```
+
+**CATATAN**: Download model akan memakan waktu dan bandwidth yang cukup besar (sekitar 1-2GB).
+
+### Langkah 3: Clone dan Setup Aplikasi
+
+1. Clone repository:
 ```bash
 git clone <repository-url>
 cd cutie-chatter-main_chatbots
 ```
 
-### 2. Install Dependencies
+2. Buat virtual environment (direkomendasikan):
+```bash
+python -m venv cutie_env
+cutie_env\Scripts\activate
+```
 
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Set Up Environment Variables
+### Langkah 4: Setup Database (Opsional)
 
-Create a `.env` file in the root directory:
+Jika ingin menggunakan fitur autentikasi dan penyimpanan chat:
 
+1. Buat file `.env`:
 ```bash
-# Copy the example file
-cp .env.example .env
+# Database Configuration (Opsional - jika tidak ada akan menggunakan SQLite lokal)
+DB_HOST=your-database-host
+DB_PORT=5432
+DB_NAME=cutiechatter
+DB_USER=your-username
+DB_PASSWORD=your-password
+DB_SSLMODE=prefer
 ```
 
-Edit the `.env` file with your actual credentials:
-
-```env
-# Supabase Database Configuration
-DB_HOST=your-supabase-host.supabase.com
-DB_PORT=6543
-DB_NAME=postgres
-DB_USER=postgres.your-project-ref
-DB_PASSWORD=your-actual-password
-DB_SSLMODE=require
-
-# Optional: OpenAI API Key
-OPENAI_API_KEY=your-openai-api-key
-```
-
-**Important**: Get your Supabase credentials from:
-1. Go to [https://supabase.com](https://supabase.com)
-2. Select your project
-3. Go to **Settings → Database**
-4. Use the **Connection Pooling** details (port 6543)
-
-### 4. Set Up Database
-
-Run the Supabase setup script:
-
+2. Setup database:
 ```bash
 python setup_supabase.py
 ```
 
-This will:
-- Test your Supabase connection
-- Create necessary database tables
-- Migrate any existing local data (if available)
+## 🏃‍♂️ Cara Menjalankan Aplikasi
 
-### 5. Generate Sample Data (Optional)
+### Metode 1: Jalankan Langsung dari Python
 
-To populate the database with sample users and chats:
-
+1. **Pastikan Ollama berjalan:**
 ```bash
-python generate_dummy_data.py
+# Di Command Prompt, jalankan:
+ollama serve
 ```
 
-This creates:
-- Sample user accounts
-- Demo chat conversations
-- Test data for development
-
-## 🏃‍♂️ Running the Application
-
-### Start the Flask Server
-
+2. **Jalankan aplikasi:**
 ```bash
-python app.py
+# Di terminal/cmd yang berbeda, dari folder aplikasi:
+python run.py
 ```
 
-The application will be available at: **http://localhost:5000**
+### Metode 2: Jalankan dengan Opsi Advanced
 
-### Default Test Accounts
+```bash
+# Jalankan dengan model specific
+python cutie.py --model deepseek-r1:1.5b
 
-If you generated dummy data, you can use these test accounts:
+# Jalankan tanpa authentication
+python cutie.py --no-auth
 
-- **Username**: `alice` | **Password**: `password123`
-- **Username**: `bob` | **Password**: `password123`
-- **Username**: `charlie` | **Password**: `password123`
+# Jalankan dalam guest mode
+python cutie.py --guest
+```
 
-## 📁 Project Structure
+### Metode 3: Build Executable (Distribusi)
+
+Untuk membuat file .exe yang bisa dijalankan tanpa Python:
+
+```bash
+# Install PyInstaller (sudah ada di requirements.txt)
+pip install pyinstaller
+
+# Build executable
+pyinstaller CutieChatbot.spec
+
+# File .exe akan ada di folder dist/
+```
+
+## 🔧 Konfigurasi dan Troubleshooting
+
+### Mengatur Model AI
+
+Model default adalah `deepseek-r1:1.5b`. Untuk menggunakan model lain:
+
+```bash
+# Download model lain (opsional)
+ollama pull deepseek-r1:7b    # Model lebih besar, lebih pintar
+ollama pull llama2           # Alternatif model
+ollama pull mistral          # Model lain
+
+# Jalankan dengan model specific
+python run.py --model deepseek-r1:7b
+```
+
+### Masalah Umum dan Solusi
+
+#### ❌ "Ollama server connection failed"
+**Solusi:**
+```bash
+# 1. Pastikan Ollama terinstall
+ollama --version
+
+# 2. Start Ollama server
+ollama serve
+
+# 3. Test koneksi
+ollama list
+```
+
+#### ❌ "No DeepSeek models found"
+**Solusi:**
+```bash
+# Download model yang diperlukan
+ollama pull deepseek-r1:1.5b
+```
+
+#### ❌ "Module 'PyQt6' not found"
+**Solusi:**
+```bash
+# Install ulang dependencies
+pip install --upgrade -r requirements.txt
+
+# Atau install manual
+pip install PyQt6 PyQt6-WebEngine
+```
+
+#### ❌ "Error starting application"
+**Solusi:**
+```bash
+# Jalankan dengan verbose output
+python cutie.py --no-auth
+
+# Check log error di console
+```
+
+#### ❌ Aplikasi lambat/hang
+**Solusi:**
+- Pastikan RAM minimal 8GB
+- Gunakan model yang lebih kecil: `deepseek-r1:1.5b`
+- Tutup aplikasi lain yang berat
+
+### Optimasi Performa
+
+1. **Untuk PC dengan RAM terbatas:**
+```bash
+# Gunakan model kecil
+python run.py --model deepseek-r1:1.5b
+```
+
+2. **Untuk PC dengan RAM besar (16GB+):**
+```bash
+# Gunakan model besar untuk hasil lebih baik
+ollama pull deepseek-r1:7b
+python run.py --model deepseek-r1:7b
+```
+
+3. **Monitoring resource:**
+- Buka Task Manager untuk monitor penggunaan RAM/CPU
+- Ollama biasanya menggunakan 2-8GB RAM tergantung model
+
+## 📁 Struktur Aplikasi
 
 ```
 CUTIE-CHATTER-MAIN_CHATBOTS/
@@ -165,129 +265,195 @@ CUTIE-CHATTER-MAIN_CHATBOTS/
 └── windows_patch.py          # Windows compatibility patch
 ```
 
-## 🔧 Configuration
+## 💡 Tips Penggunaan
 
-### Database Configuration
+### 1. First Time Setup
+- Pastikan internet stabil untuk download model AI
+- Download model bisa memakan waktu 10-30 menit
+- Model akan disimpan permanent di sistem
 
-The app supports both local PostgreSQL and Supabase:
+### 2. Daily Usage
+- Selalu jalankan `ollama serve` sebelum buka aplikasi
+- Aplikasi bisa diminimize ke system tray
+- Chat history tersimpan otomatis
 
-- **Supabase (Recommended)**: Cloud PostgreSQL with automatic scaling
-- **Local PostgreSQL**: For development (optional)
+### 3. Advanced Features
+- **Sentiment Analysis**: Otomatis analisis emosi dalam chat
+- **OCR**: Drag & drop gambar untuk ekstrak teks
+- **Theme**: Bisa ganti tema dark/light
+- **Export Chat**: Save percakapan ke file
 
-### Environment Variables
+## 📖 Panduan Step-by-Step untuk Pemula
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `DB_HOST` | Database host | ✅ |
-| `DB_PORT` | Database port (6543 for Supabase pooling) | ✅ |
-| `DB_NAME` | Database name | ✅ |
-| `DB_USER` | Database username | ✅ |
-| `DB_PASSWORD` | Database password | ✅ |
-| `DB_SSLMODE` | SSL mode (require for Supabase) | ✅ |
-| `OPENAI_API_KEY` | OpenAI API key for AI features | ❌ |
+### Setup Pertama Kali (Detail)
 
-## 🐛 Troubleshooting
+1. **Buka Command Prompt sebagai Administrator:**
+   - Tekan `Win + R`
+   - Ketik `cmd`
+   - Tekan `Ctrl + Shift + Enter`
 
-### Common Issues
-
-1. **"Wrong password" error**
-   - Double-check your Supabase password
-   - Make sure you're using Connection Pooling credentials (port 6543)
-
-2. **"Module not found" error**
+2. **Install Ollama:**
    ```bash
+   # Download dan install dari https://ollama.ai/
+   # Atau gunakan winget jika tersedia
+   winget install Ollama.Ollama
+   ```
+
+3. **Start Ollama server:**
+   ```bash
+   ollama serve
+   ```
+   - **JANGAN TUTUP** window ini, biarkan terus berjalan
+
+4. **Buka Command Prompt baru:**
+   ```bash
+   # Download model AI (ini akan lama, sabar)
+   ollama pull deepseek-r1:1.5b
+   
+   # Verify model terdownload
+   ollama list
+   ```
+
+5. **Clone aplikasi:**
+   ```bash
+   # Pindah ke folder yang diinginkan
+   cd C:\Users\%USERNAME%\Desktop
+   
+   # Clone repository (ganti <repository-url> dengan URL asli)
+   git clone <repository-url>
+   cd cutie-chatter-main_chatbots
+   ```
+
+6. **Setup Python environment:**
+   ```bash
+   # Buat virtual environment
+   python -m venv cutie_env
+   
+   # Activate environment
+   cutie_env\Scripts\activate
+   
+   # Install requirements
    pip install -r requirements.txt
    ```
 
-3. **Database connection issues**
-   - Verify your `.env` file has correct credentials
-   - Test connection: `python setup_supabase.py`
+7. **Test run aplikasi:**
+   ```bash
+   # Pastikan masih di folder aplikasi dan venv aktif
+   python run.py
+   ```
 
-4. **Port already in use**
-   - Change the port in `app.py`: `app.run(port=5001)`
+### Penggunaan Harian
 
-### Database Reset
+1. **Setiap mau pakai aplikasi:**
+   ```bash
+   # 1. Start Ollama (jika belum jalan)
+   ollama serve
+   
+   # 2. Di Command Prompt baru, masuk ke folder app
+   cd C:\Users\%USERNAME%\Desktop\cutie-chatter-main_chatbots
+   
+   # 3. Activate virtual environment
+   cutie_env\Scripts\activate
+   
+   # 4. Jalankan aplikasi
+   python run.py
+   ```
 
-To reset your database:
+2. **Shortcut (Buat file .bat):**
+   
+   Buat file `start_cutie.bat` di folder aplikasi:
+   ```batch
+   @echo off
+   cd /d "C:\Users\%USERNAME%\Desktop\cutie-chatter-main_chatbots"
+   call cutie_env\Scripts\activate
+   python run.py
+   pause
+   ```
+   
+   Double-click file `.bat` ini untuk langsung jalankan aplikasi.
+
+## 🔍 Monitoring dan Debugging
+
+### Check Status System
 
 ```bash
-# This will clear all data and recreate tables
-python setup_supabase.py
-python generate_dummy_data.py
+# Check Python
+python --version
+
+# Check Ollama
+ollama --version
+ollama list
+
+# Check dependencies
+pip list | findstr PyQt6
+pip list | findstr ollama
 ```
 
-## 🔄 Migration from SQLite
+### Log Aplikasi
 
-If you're migrating from a previous SQLite version:
+Aplikasi akan menampilkan log di console. Perhatikan pesan:
+- ✅ = Sukses
+- ❌ = Error
+- ⚠️ = Warning
 
-1. The migration script will automatically detect local PostgreSQL data
-2. Run `python setup_supabase.py` and choose 'y' to migrate
-3. Your existing data will be transferred to Supabase
-
-## 🚀 Deployment
-
-### Local Development
-```bash
-python app.py
+Common log messages:
+```
+✅ Ollama server running!
+✅ DeepSeek models found: ['deepseek-r1:1.5b']
+🚀 CutieChatter started with model: deepseek-r1:1.5b
+❌ Ollama server connection failed
+❌ No DeepSeek models found!
 ```
 
-### Production Deployment
+## 🎯 FAQ (Frequently Asked Questions)
 
-For production deployment, consider:
+### Q: Kenapa aplikasi tidak bisa connect ke Ollama?
+A: Pastikan `ollama serve` sudah dijalankan dan tidak ada error. Check dengan `ollama list`.
 
-1. **Environment Variables**: Set production values
-2. **WSGI Server**: Use Gunicorn or uWSGI
-3. **Reverse Proxy**: Nginx or Apache
-4. **SSL Certificate**: Enable HTTPS
-5. **Database**: Ensure Supabase is properly configured
+### Q: Model mana yang paling baik?
+A: 
+- `deepseek-r1:1.5b` - Ringan, cocok untuk PC 8GB RAM
+- `deepseek-r1:7b` - Lebih pintar, butuh 16GB+ RAM
+- `deepseek-r1:14b` - Paling pintar, butuh 32GB+ RAM
 
-Example with Gunicorn:
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 app:app
-```
+### Q: Bisa jalankan tanpa internet?
+A: Setelah model didownload, aplikasi bisa jalan offline. Tapi download pertama butuh internet.
 
-## 📝 API Endpoints
+### Q: Aman tidak data chatnya?
+A: Semua data disimpan lokal di PC Anda. Tidak ada yang dikirim ke server luar.
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Home page |
-| `/register` | GET/POST | User registration |
-| `/login` | GET/POST | User login |
-| `/logout` | POST | User logout |
-| `/chat` | GET | Chat interface |
-| `/api/chat` | POST | Send chat message |
+### Q: Bisa ubah tema UI?
+A: Ya, ada toggle dark/light mode di aplikasi.
 
-## 🤝 Contributing
+### Q: Bisa export chat history?
+A: Fitur export sedang dikembangkan. Saat ini data tersimpan di database lokal.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+## 📞 Support dan Kontribusi
 
-## 📄 License
+### Jika Ada Masalah:
+1. Check console/terminal untuk pesan error
+2. Pastikan semua dependencies terinstall dengan benar
+3. Verify Ollama server berjalan dengan `ollama list`
+4. Restart aplikasi dan Ollama server
+5. Buat issue di GitHub dengan detail error
 
-This project is licensed under the MIT License.
+### Kontribusi:
+- Fork repository ini
+- Buat branch untuk fitur baru
+- Submit pull request dengan deskripsi jelas
 
-## 🆘 Support
+### Contact:
+- GitHub Issues untuk bug reports
+- Discussion untuk feature requests
 
-If you encounter any issues:
+## 📄 Lisensi
 
-1. Check the troubleshooting section above
-2. Verify your environment configuration
-3. Check the console/terminal for error messages
-4. Ensure all dependencies are installed
-
-## 🎯 Next Steps
-
-After successful setup:
-
-1. **Customize Chatbots**: Modify chatbot personalities in the code
-2. **Add Features**: Extend functionality as needed
-3. **Styling**: Customize the UI/UX
-4. **Deploy**: Move to production environment
+Proyek ini menggunakan lisensi MIT. Lihat file LICENSE untuk detail lengkap.
 
 ---
+
+**🎉 Selamat Menggunakan CutieChatter Desktop!**
+
+Untuk pertanyaan atau bantuan lebih lanjut, silakan buka issue di GitHub repository ini atau hubungi developer melalui email yang tertera di profil GitHub.
 
 **Happy Chatting! 💬✨**

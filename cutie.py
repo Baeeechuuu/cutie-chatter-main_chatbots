@@ -276,7 +276,7 @@ class CutieTheCutest(QMainWindow):
         self.is_guest_mode = False
         self.auth_window = None
         
-        self.setWindowTitle("CutieChatter - Desktop Web Hybrid")
+        self.setWindowTitle("CutieChatter - Desktop Application")
         
         # Initialize settings untuk menyimpan preferensi tema
         self.settings = QSettings("CutieChatter", "ThemeSettings")
