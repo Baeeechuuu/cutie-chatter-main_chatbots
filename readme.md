@@ -119,19 +119,50 @@ If you generated dummy data, you can use these test accounts:
 ## 📁 Project Structure
 
 ```
-cutie-chatter-main_chatbots/
-├── app.py                 # Main Flask application
-├── auth.py               # Authentication logic
-├── auth_postgresql.py    # PostgreSQL auth implementation
-├── database_config.py    # Database configuration
-├── setup_supabase.py     # Database setup script
-├── generate_dummy_data.py # Sample data generator
-├── requirements.txt      # Python dependencies
-├── .env                  # Environment variables (create this)
-├── .env.example         # Environment template
-├── static/              # CSS, JS, images
-├── templates/           # HTML templates
-└── README.md           # This file
+CUTIE-CHATTER-MAIN_CHATBOTS/
+├── __pycache__/              # Python cache files
+├── analysis/                 # Data analysis modules
+├── background/               # Background processing
+├── build/                    # Built application files
+├── dist/                     # Distribution files
+├── icons/                    # Application icons
+├── model_checkpoints/        # AI model checkpoints
+├── ocr/                      # OCR processing modules
+├── pre-prod/                 # Pre-production files
+├── sentiment/                # Sentiment analysis
+├── stt/                      # Speech-to-Text modules
+├── temp_audio/               # Temporary audio files
+├── themes/                   # UI themes
+├── training_logs/            # Model training logs
+├── tts/                      # Text-to-Speech modules
+├── web_ui/                   # Web interface files
+├── auth_bridge.py            # Authentication bridge
+├── auth_postgresql.py        # PostgreSQL authentication
+├── auth.html                 # Authentication page
+├── auth.py                   # Main authentication module
+├── backend2.py               # Secondary backend
+├── backends.py               # Backend configurations
+├── chat_bridge.py            # Chat bridge module
+├── cutie.py                  # Main application entry point
+├── CutieChatbot.spec         # PyInstaller specification
+├── cutiechatter_users.db     # User database
+├── database_config.py        # Database configuration
+├── dataset_patch.py          # Dataset patching utilities
+├── demo_output.wav           # Demo audio file
+├── demo_tts.py               # TTS demonstration
+├── generate_dummy_data.py    # Test data generation
+├── migration_guide.md        # Database migration guide
+├── readme.md                 # This file
+├── requirements.txt          # Python dependencies
+├── run.py                    # Application runner
+├── setup_supabase.py         # Supabase setup
+├── SUPABASE_MIGRATION_GUIDE.md # Supabase migration guide
+├── tempCodeRunnerFile.py     # Temporary code files
+├── test_postgresql_setup.py  # PostgreSQL testing
+├── test_supabase_connection.py # Supabase testing
+├── tts_training.log          # TTS training logs
+├── ui_chatbot.html           # Main chat interface
+└── windows_patch.py          # Windows compatibility patch
 ```
 
 ## 🔧 Configuration
