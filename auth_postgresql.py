@@ -1,4 +1,4 @@
-# auth.py - Backend Autentikasi untuk CutieChatter dengan PostgreSQL
+# auth_postgresql.py - Backend Autentikasi untuk CutieChatter dengan PostgreSQL
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import hashlib
@@ -531,4 +531,4 @@ def test_auth_system():
     print("✅ Authentication system test completed!")
 
 if __name__ == "__main__":
-    test_auth_system()
+    test_auth_system() 

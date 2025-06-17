@@ -8,6 +8,10 @@ torch>=2.0.0
 ollama>=0.1.7
 tokenizers>=0.15.0
 
+# Database dependencies for PostgreSQL
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+
 # Utility libraries
 screeninfo>=0.8.1
 requests>=2.31.0
@@ -21,4 +25,6 @@ pyinstaller>=6.0.0
 
 # Optional untuk audio processing jika diperlukan  
 # sounddevice>=0.4.6
-# pydub>=0.25.1 
+# pydub>=0.25.1
+
+python-dotenv==1.0.0 

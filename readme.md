@@ -1,152 +1,262 @@
-# CutieChatter - AI Chat Application with TTS
+# CutieChatter 💬
 
-A beautiful PyQt6-based chat application featuring AI conversation, document processing, sentiment analysis, and **Text-to-Speech functionality** using Genshin Impact character voices.
+A modern web-based chatbot application with multiple AI personalities, built with Flask and PostgreSQL. Chat with different AI characters, each with unique personalities and conversation styles.
 
-## Features
+## ✨ Features
 
-### 🤖 AI Chat
-- **DeepSeek Integration**: Powered by DeepSeek R1 models (1.5B to 627B parameters)
-- **Streaming Responses**: Real-time message streaming
-- **Conversation Memory**: Maintains chat history
-- **Beautiful UI**: Modern, gradient-themed interface
+- 🤖 Multiple AI chatbot personalities
+- 👤 User authentication and registration
+- 💾 Chat history persistence
+- 🎨 Modern, responsive web interface
+- ☁️ Cloud database support (Supabase)
+- 🔒 Secure session management
 
-### 🔊 Text-to-Speech (NEW!)
-- **Genshin Impact Voices**: Train TTS models using Genshin character voices
-- **Multi-Speaker Support**: Choose from 60+ Genshin Impact characters
-- **Real-time Audio**: Convert AI responses to speech instantly
-- **Custom Training**: Train your own TTS models with the provided scripts
+## 🛠️ Tech Stack
 
-### 📄 Document Processing
-- **OCR Support**: Extract text from PDF documents
-- **Document Chat**: Ask questions about uploaded documents
-- **Multilingual Support**: Process documents in multiple languages
+- **Backend**: Python Flask
+- **Database**: PostgreSQL (Supabase)
+- **Frontend**: HTML, CSS, JavaScript
+- **Authentication**: Custom session-based auth
+- **AI**: OpenAI GPT integration
 
-### 💭 Sentiment Analysis
-- **Emotion Classification**: Analyze emotional content in conversations
-- **Attachment Theory**: Track emotional connections over time
-- **Text Similarity**: Measure conversation coherence
+## 📋 Prerequisites
 
-### 🎙️ Speech Recognition
-- **Whisper Integration**: Convert speech to text
-- **Real-time Processing**: Voice input support
+Before running this application, make sure you have:
 
-## Installation
+- Python 3.7 or higher
+- A Supabase account and project
+- OpenAI API key (optional, for AI features)
 
-### Prerequisites
-- Python 3.8+
-- PyQt6
-- CUDA (recommended for TTS training)
+## 🚀 Installation & Setup
 
-### Quick Setup
+### 1. Clone the Repository
+
 ```bash
-# Clone the repository
 git clone <repository-url>
-cd cutie-chatter-main
-
-# Install dependencies
-pip install -r requirements.txt
-
-# For TTS functionality
-cd model-train
-pip install -r requirements.txt
-
-# Login to Hugging Face (for TTS dataset access)
-huggingface-cli login
+cd cutie-chatter-main_chatbots
 ```
 
-## Usage
+### 2. Install Dependencies
 
-### Starting the Application
 ```bash
-python run.py
+pip install -r requirements.txt
 ```
 
-### Training TTS Models
+### 3. Set Up Environment Variables
+
+Create a `.env` file in the root directory:
+
 ```bash
-cd model-train
-python train_tts.py
+# Copy the example file
+cp .env.example .env
 ```
 
-### TTS Features
-1. **Train Your Model**: Use the Genshin voice dataset to train character-specific voices
-2. **Play AI Responses**: Click the 🔊 Play button on any AI message
-3. **Choose Speakers**: Select from 60+ Genshin Impact characters
-4. **Real-time Audio**: Instant text-to-speech conversion
+Edit the `.env` file with your actual credentials:
 
-## TTS Model Training
+```env
+# Supabase Database Configuration
+DB_HOST=your-supabase-host.supabase.com
+DB_PORT=6543
+DB_NAME=postgres
+DB_USER=postgres.your-project-ref
+DB_PASSWORD=your-actual-password
+DB_SSLMODE=require
 
-The application includes a complete TTS training pipeline:
-
-### Dataset
-- **Source**: `nc33/genshin_voice_v13` from Hugging Face
-- **Size**: 200 high-quality voice samples
-- **Characters**: Multiple Genshin Impact characters
-- **Languages**: English and Japanese
-
-### Training Process
-1. **Setup**: Login to Hugging Face and install dependencies
-2. **Train**: Run the training script (2-4 hours on GPU)
-3. **Deploy**: Model automatically integrates with the chat app
-4. **Enjoy**: AI responses with Genshin character voices!
-
-## Architecture
-
-### Core Components
-- **Chat Interface**: PyQt6-based modern UI
-- **AI Backend**: Ollama integration with DeepSeek models
-- **TTS Engine**: Custom Tacotron-like architecture
-- **Audio Processing**: Griffin-Lim vocoder for speech synthesis
-- **Sentiment Analysis**: Custom emotion classification models
-
-### TTS Architecture
-- **Text Encoder**: LSTM-based text processing
-- **Attention**: Multi-head attention for alignment
-- **Decoder**: Mel spectrogram generation
-- **Vocoder**: Griffin-Lim audio synthesis
-- **Speaker Embedding**: Multi-speaker support
-
-## Configuration
-
-### Supported Models
-- deepseek-r1:1.5b (lightweight)
-- deepseek-r1:7b (balanced)
-- deepseek-r1:8b (recommended)
-- deepseek-r1:14b (high quality)
-- deepseek-r1:32b (maximum quality)
-
-### TTS Settings
-- Sample Rate: 22,050 Hz
-- Mel Spectrograms: 80 bins
-- Max Audio Length: 10 seconds
-- Supported Characters: 60+ Genshin Impact voices
-
-## File Structure
-```
-cutie-chatter-main/
-├── run.py              # Main application entry
-├── cutie.py            # Main window implementation
-├── backends.py         # AI and TTS workers
-├── tts/                # TTS engine and inference
-│   ├── __init__.py
-│   └── tts_engine.py   # TTS model and audio processing
-├── model-train/        # TTS training pipeline
-│   ├── tts_trainer.py  # Training script
-│   ├── train_tts.py    # Simple training launcher
-│   ├── requirements.txt
-│   └── README.md       # Detailed TTS documentation
-├── themes/             # UI styling
-├── icons/              # UI icons (including audio controls)
-├── sentiment/          # Emotion analysis
-├── ocr/               # Document processing
-└── stt/               # Speech-to-text
+# Optional: OpenAI API Key
+OPENAI_API_KEY=your-openai-api-key
 ```
 
-## License
-GNU General Public License v3.0
+**Important**: Get your Supabase credentials from:
+1. Go to [https://supabase.com](https://supabase.com)
+2. Select your project
+3. Go to **Settings → Database**
+4. Use the **Connection Pooling** details (port 6543)
 
-## Contributing
-Feel free to contribute to the project! Areas of interest:
-- Improved TTS models (WaveGlow, HiFi-GAN)
-- Additional character voices
-- Performance optimizations
-- UI/UX improvements
+### 4. Set Up Database
+
+Run the Supabase setup script:
+
+```bash
+python setup_supabase.py
+```
+
+This will:
+- Test your Supabase connection
+- Create necessary database tables
+- Migrate any existing local data (if available)
+
+### 5. Generate Sample Data (Optional)
+
+To populate the database with sample users and chats:
+
+```bash
+python generate_dummy_data.py
+```
+
+This creates:
+- Sample user accounts
+- Demo chat conversations
+- Test data for development
+
+## 🏃‍♂️ Running the Application
+
+### Start the Flask Server
+
+```bash
+python app.py
+```
+
+The application will be available at: **http://localhost:5000**
+
+### Default Test Accounts
+
+If you generated dummy data, you can use these test accounts:
+
+- **Username**: `alice` | **Password**: `password123`
+- **Username**: `bob` | **Password**: `password123`
+- **Username**: `charlie` | **Password**: `password123`
+
+## 📁 Project Structure
+
+```
+cutie-chatter-main_chatbots/
+├── app.py                 # Main Flask application
+├── auth.py               # Authentication logic
+├── auth_postgresql.py    # PostgreSQL auth implementation
+├── database_config.py    # Database configuration
+├── setup_supabase.py     # Database setup script
+├── generate_dummy_data.py # Sample data generator
+├── requirements.txt      # Python dependencies
+├── .env                  # Environment variables (create this)
+├── .env.example         # Environment template
+├── static/              # CSS, JS, images
+├── templates/           # HTML templates
+└── README.md           # This file
+```
+
+## 🔧 Configuration
+
+### Database Configuration
+
+The app supports both local PostgreSQL and Supabase:
+
+- **Supabase (Recommended)**: Cloud PostgreSQL with automatic scaling
+- **Local PostgreSQL**: For development (optional)
+
+### Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DB_HOST` | Database host | ✅ |
+| `DB_PORT` | Database port (6543 for Supabase pooling) | ✅ |
+| `DB_NAME` | Database name | ✅ |
+| `DB_USER` | Database username | ✅ |
+| `DB_PASSWORD` | Database password | ✅ |
+| `DB_SSLMODE` | SSL mode (require for Supabase) | ✅ |
+| `OPENAI_API_KEY` | OpenAI API key for AI features | ❌ |
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **"Wrong password" error**
+   - Double-check your Supabase password
+   - Make sure you're using Connection Pooling credentials (port 6543)
+
+2. **"Module not found" error**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Database connection issues**
+   - Verify your `.env` file has correct credentials
+   - Test connection: `python setup_supabase.py`
+
+4. **Port already in use**
+   - Change the port in `app.py`: `app.run(port=5001)`
+
+### Database Reset
+
+To reset your database:
+
+```bash
+# This will clear all data and recreate tables
+python setup_supabase.py
+python generate_dummy_data.py
+```
+
+## 🔄 Migration from SQLite
+
+If you're migrating from a previous SQLite version:
+
+1. The migration script will automatically detect local PostgreSQL data
+2. Run `python setup_supabase.py` and choose 'y' to migrate
+3. Your existing data will be transferred to Supabase
+
+## 🚀 Deployment
+
+### Local Development
+```bash
+python app.py
+```
+
+### Production Deployment
+
+For production deployment, consider:
+
+1. **Environment Variables**: Set production values
+2. **WSGI Server**: Use Gunicorn or uWSGI
+3. **Reverse Proxy**: Nginx or Apache
+4. **SSL Certificate**: Enable HTTPS
+5. **Database**: Ensure Supabase is properly configured
+
+Example with Gunicorn:
+```bash
+pip install gunicorn
+gunicorn -w 4 -b 0.0.0.0:8000 app:app
+```
+
+## 📝 API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Home page |
+| `/register` | GET/POST | User registration |
+| `/login` | GET/POST | User login |
+| `/logout` | POST | User logout |
+| `/chat` | GET | Chat interface |
+| `/api/chat` | POST | Send chat message |
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+If you encounter any issues:
+
+1. Check the troubleshooting section above
+2. Verify your environment configuration
+3. Check the console/terminal for error messages
+4. Ensure all dependencies are installed
+
+## 🎯 Next Steps
+
+After successful setup:
+
+1. **Customize Chatbots**: Modify chatbot personalities in the code
+2. **Add Features**: Extend functionality as needed
+3. **Styling**: Customize the UI/UX
+4. **Deploy**: Move to production environment
+
+---
+
+**Happy Chatting! 💬✨**
